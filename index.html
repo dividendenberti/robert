@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZARUBA-EDV</title>
+    <style>
+        body {
+            background: url('grafik.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            font-size: 3em;
+        }
+        .content {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>ZARUBA-EDV</h1>
+    <div class="content">
+        <p>Ein Chatbot mit n8n kann durch die Verwendung von Workflows erstellt werden. Dabei empfängt der Webhook Anfragen und verarbeitet sie mit Logik und KI-Integration. n8n ermöglicht eine flexible Steuerung der Antworten und Anbindung an verschiedene APIs.</p>
+    </div>
+
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+        
+        createChat({
+            webhookUrl: 'https://nachtn.zaruba-edv.at/webhook/ce2f65f1-35e0-4801-bb17-b94339f5884f/chat',
+            webhookConfig: {
+                method: 'POST',
+                headers: {}
+            },
+            mode: 'embedded',
+            chatInputKey: 'chatInput',
+            chatSessionKey: 'sessionId',
+            metadata: {},
+            showWelcomeScreen: false,
+            defaultLanguage: 'en',
+            initialMessages: [
+                'Servas! 👋',
+                'Meine Name ist Berti, wie kann ich dir helfen?'
+            ],
+            i18n: {
+                en: {
+                    title: 'Berti - dein n8n KI Assistent',
+                    subtitle: "Frag einfach, ich helfe dir gern!",
+                    footer: 'Powered by Berti',
+                    getStarted: 'Start Chat',
+                    inputPlaceholder: 'Gib hier deine Frage ein...'
+                }
+            }
+        });
+    </script>
+</body>
+</html>
