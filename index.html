@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZARUBA-EDV</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css">
     <style>
         body {
             background: url('grafik.png') no-repeat center center fixed;
@@ -13,23 +14,47 @@
             text-align: center;
             padding: 50px;
         }
+        .header {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
         h1 {
-            font-size: 3em;
+            font-size: 2.5em;
         }
         .content {
-            background: rgba(0, 0, 0, 0.6);
+            max-width: 600px;
+            margin: auto;
+            background: rgba(27, 204, 42, 0.1);
             padding: 20px;
             border-radius: 10px;
-            display: inline-block;
+        }
+        .content img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <a href="https://zaruba-edv.at/">Home</a>
+    </div>
     <h1>ZARUBA-EDV</h1>
     <div class="content">
-        <p>Ein Chatbot mit n8n kann durch die Verwendung von Workflows erstellt werden. Dabei empfängt der Webhook Anfragen und verarbeitet sie mit Logik und KI-Integration. n8n ermöglicht eine flexible Steuerung der Antworten und Anbindung an verschiedene APIs.</p>
+        <h2>Warum ein Chatbot?</h2>
+        <p>Ein Chatbot kann Ihren Kundenservice verbessern, Anfragen rund um die Uhr beantworten und Prozesse automatisieren. 
+           Testen Sie unseren Chatbot direkt hier auf der Seite, rechts unten der rote Meaasege Button!</p>
+        <p>Umgesetzt wird das mit n8n, hier sehen sie ein Bild wie dieser worklfow im Hintergrund aussieht!</p>		   
+        <img src="n8n-chat.png" alt="n8n Chatbot">
     </div>
-
+    
     <script type="module">
         import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
         
@@ -51,7 +76,7 @@
             ],
             i18n: {
                 en: {
-                    title: 'Berti - dein n8n KI Assistent',
+                    title: 'Berti - der n8n KI Assistent von ZARUBA-EDV',
                     subtitle: "Frag einfach, ich helfe dir gern!",
                     footer: 'Powered by Berti',
                     getStarted: 'Start Chat',
