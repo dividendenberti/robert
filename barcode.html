@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Artikel Scan</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    #reader { width: 300px; margin: 20px auto; }
+    #result { font-family: monospace; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">📦 Artikel Scanner</h2>
+  <div id="reader"></div>
+  <div id="result">Scanne einen Barcode…</div>
+
+  <script>
+    function sendBarcode(barcode) {
+      fetch("https://nachtn.zaruba-edv.at/webhook-test/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ barcode: barcode })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "Fehler: " + err;
+      });
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: 250 },
+          (decodedText) => {
+            html5QrCode.stop(); // nur 1 Scan
+            sendBarcode(decodedText);
+          }
+        );
+      }
+    });
+  </script>
+</body>
+</html>
