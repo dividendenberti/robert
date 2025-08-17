@@ -3,87 +3,619 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZARUBA-EDV</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css">
+    <title>n8n Automatisierung - Professionelle Workflow-Lösungen</title>
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: url('grafik.png') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
-        .header {
-            position: absolute;
-            top: 10px;
-            right: 20px;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
-        .header a {
-            color: white;
-            text-decoration: none;
-            font-size: 1.2em;
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
             font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
         }
-        h1 {
-            font-size: 2.5em;
+
+        .logo::before {
+            content: "⚡";
+            margin-right: 0.5rem;
+            font-size: 1.5rem;
         }
-        .content {
-            max-width: 600px;
-            margin: auto;
-            background: rgba(27, 204, 42, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
         }
-        .content img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 20px;
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 5rem 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="4s" repeatCount="indefinite"/></circle><circle cx="800" cy="300" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="3s" repeatCount="indefinite"/></circle><circle cx="500" cy="700" r="120" fill="url(%23a)"><animate attributeName="r" values="120;180;120" dur="5s" repeatCount="indefinite"/></circle></svg>');
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(238, 90, 36, 0.4);
+        }
+
+        .services {
+            background: white;
+            padding: 5rem 0;
+            margin-top: -2rem;
+            border-radius: 2rem 2rem 0 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .service-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .about {
+            background: #f8f9fa;
+            padding: 5rem 0;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .about-text p {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .features {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 2rem;
+            color: #555;
+        }
+
+        .features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .about-visual {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workflow-demo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .workflow-step {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            backdrop-filter: blur(10px);
+            animation: pulse 2s infinite;
+        }
+
+        .workflow-step:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .workflow-step:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .contact {
+            background: #333;
+            color: white;
+            padding: 5rem 0;
+        }
+
+        .contact-content {
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-item h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        /* Chat Bot Styling Override */
+        .chat-window {
+            z-index: 10000 !important;
+        }
+        
+        .chat-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+            border: none !important;
+            animation: chatPulse 2s infinite;
+        }
+        
+        .chat-toggle:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4) !important;
+        }
+        
+        @keyframes chatPulse {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+            50% {
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        footer {
+            background: #222;
+            color: #999;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .workflow-demo {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="https://zaruba-edv.at/">Home</a>
-    </div>
-    <h1>ZARUBA-EDV</h1>
-    <div class="content">
-        <h2>Warum ein Chatbot?</h2>
-        <p>Ein Chatbot kann Ihren Kundenservice verbessern, Anfragen rund um die Uhr beantworten und Prozesse automatisieren. 
-           Testen Sie unseren Chatbot direkt hier auf der Seite, rechts unten der rote Meaasege Button!</p>
-        <p>Umgesetzt wird das mit n8n, hier sehen sie ein Bild wie dieser worklfow im Hintergrund aussieht!</p>		   
-        <img src="n8n-chat.png" alt="n8n Chatbot">
-    </div>
-    
-    <script type="module">
-        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-        
-        createChat({
-            webhookUrl: 'https://nachtn.zaruba-edv.at/webhook/ce2f65f1-35e0-4801-bb17-b94339f5884f/chat',
-            webhookConfig: {
-                method: 'POST',
-                headers: {}
-            },
-            mode: 'embedded',
-            chatInputKey: 'chatInput',
-            chatSessionKey: 'sessionId',
-            metadata: {},
-            showWelcomeScreen: false,
-            defaultLanguage: 'en',
-            initialMessages: [
-                'Servas! 👋',
-                'Meine Name ist Berti, wie kann ich dir helfen?'
-            ],
-            i18n: {
-                en: {
-                    title: 'Berti - der n8n KI Assistent von ZARUBA-EDV',
-                    subtitle: "Frag einfach, ich helfe dir gern!",
-                    footer: 'Powered by Berti',
-                    getStarted: 'Start Chat',
-                    inputPlaceholder: 'Gib hier deine Frage ein...'
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">n8n Solutions</a>
+            <ul class="nav-links">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">Über uns</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>KI-gestützte Automatisierung neu gedacht</h1>
+            <p>Wir revolutionieren Ihre Geschäftsprozesse mit intelligenten n8n-Workflows und modernster KI-Integration für maximale Effizienz</p>
+            <a href="#contact" class="cta-button">Kostenloses Beratungsgespräch</a>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Unsere Expertise</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🔄</div>
+                    <h3>Workflow-Automatisierung</h3>
+                    <p>Entwicklung individueller n8n-Workflows zur Automatisierung wiederkehrender Aufgaben und Optimierung Ihrer Geschäftsprozesse.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔗</div>
+                    <h3>API-Integration</h3>
+                    <p>Nahtlose Verbindung verschiedener Systeme und Services durch professionelle API-Integrationen mit n8n.</p>
+                </div>
+                <div class="service-card">
+                    <div class icon">📊</div>
+                    <h3>Datenverarbeitung</h3>
+                    <p>Automatisierte Datenerfassung, -transformation und -analyse für datengetriebene Entscheidungen.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📧</div>
+                    <h3>E-Mail Marketing</h3>
+                    <p>Intelligente E-Mail-Kampagnen und Follow-up-Sequenzen mit personalisierten, automatisierten Workflows.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>Social Media</h3>
+                    <p>Automatisierung von Social Media Posts, Monitoring und Engagement für eine konsistente Online-Präsenz.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎯</div>
+                    <h3>CRM-Automatisierung</h3>
+                    <p>Optimierung Ihres Kundenmanagements durch intelligente CRM-Workflows und Lead-Nurturing-Prozesse.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🤖</div>
+                    <h3>KI-Integration</h3>
+                    <p>Intelligente Automatisierung mit ChatGPT, Claude, Gemini und anderen KI-Services für smarte Entscheidungen und Inhaltsverarbeitung.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🧠</div>
+                    <h3>KI-Assistenten</h3>
+                    <p>Entwicklung maßgeschneiderte KI-Assistenten für Kundenservice, Content-Erstellung und automatisierte Datenanalyse.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Warum KI + n8n Automatisierung?</h2>
+                    <p>Als spezialisierter n8n-Dienstleister verwandeln wir komplexe, manuelle Prozesse in elegante, automatisierte Workflows. Mit modernster KI-Integration schaffen wir intelligente Lösungen, die nicht nur automatisieren, sondern auch smart entscheiden.</p>
+                    <p>Kombinieren Sie die Power von n8n mit führenden KI-Services wie OpenAI, Claude, Gemini und lokalen KI-Modellen für maximale Effizienz und Innovation.</p>
+                    <ul class="features">
+                        <li>KI-gestützte Entscheidungsfindung in Workflows</li>
+                        <li>Integration von ChatGPT, Claude, Gemini & Co.</li>
+                        <li>Kosteneffiziente Alternative zu Zapier und anderen Tools</li>
+                        <li>Open-Source Flexibilität mit Enterprise-Features</li>
+                        <li>Vollständige Kontrolle über Ihre Daten</li>
+                        <li>Unbegrenzte Workflows ohne versteckte Kosten</li>
+                        <li>Self-Hosted oder Cloud-Lösungen</li>
+                        <li>24/7 Support und Wartung</li>
+                    </ul>
+                </div>
+                <div class="about-visual">
+                    <h3>KI-Enhanced Workflow</h3>
+                    <div class="workflow-demo">
+                        <div class="workflow-step">📥</div>
+                        <div class="workflow-step">🤖</div>
+                        <div class="workflow-step">⚙️</div>
+                        <div class="workflow-step">📤</div>
+                    </div>
+                    <p>Daten sammeln → KI analysiert → Intelligent verarbeiten → Smart weiterleiten</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2>Bereit für die Automatisierung?</h2>
+                <p>Lassen Sie uns gemeinsam Ihre Prozesse optimieren und Ihr Unternehmen auf die nächste Stufe bringen.</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>📧 E-Mail</h3>
+                        <p>office@zaruba-edv.at</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>📞 Telefon</h3>
+                        <p>+43 677 61381622</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>🌐 Website</h3>
+                        <p>www.ki-berti.at</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>⏰ Verfügbarkeit</h3>
+                        <p>Mo-Fr: 9:00-18:00 Uhr</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 n8n Solutions by Zaruba EDV. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling für Navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
-            }
+            });
         });
+
+        // Animation beim Scrollen
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Beobachte alle Service Cards
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Parallax Effekt für Hero Section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero');
+            const speed = scrolled * 0.5;
+            parallax.style.transform = `translateY(${speed}px)`;
+        });
+
+        // Dynamische Workflow Animation
+        const workflowSteps = document.querySelectorAll('.workflow-step');
+        let currentStep = 0;
+
+        setInterval(() => {
+            workflowSteps.forEach(step => step.style.transform = 'scale(1)');
+            workflowSteps[currentStep].style.transform = 'scale(1.2)';
+            currentStep = (currentStep + 1) % workflowSteps.length;
+        }, 1500);
     </script>
+	<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+<script>
+  (function(d,t) {
+    var BASE_URL="https://chatwoot.zaruba-edv.at";
+    var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=BASE_URL+"/packs/js/sdk.js";
+    g.async = true;
+    s.parentNode.insertBefore(g,s);
+    g.onload=function(){
+      window.chatwootSDK.run({
+        websiteToken: 'nanAt2X8hGzQvXKbtRSL6VSd',
+        baseUrl: BASE_URL
+      })
+    }
+  })(document,"script");
+</script>
+
+
+
 </body>
 </html>
