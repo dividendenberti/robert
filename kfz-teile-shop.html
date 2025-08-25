@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFZ-Ersatzteile jeglicher Art!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><radialGradient id="bg" cx="50%" cy="50%"><stop offset="0%" stop-color="%23333"/><stop offset="100%" stop-color="%23111"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23bg)"/></svg>');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: linear-gradient(45deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #ccc;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .selection-form {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .form-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><path d="M7 10l5 5 5-5H7z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        select:hover {
+            background: rgba(255,255,255,0.95);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin: 0 auto;
+            min-width: 200px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .popular-badge {
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .selection-form {
+                padding: 20px;
+            }
+        }
+
+        /* Car silhouette decoration */
+        .car-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0 120 C100 100, 200 110, 300 120 C400 100, 500 110, 600 120 C700 100, 800 110, 900 120 C1000 100, 1100 110, 1200 120 L1200 200 L0 200 Z" fill="rgba(255,255,255,0.05)"/></svg>') repeat-x;
+            background-size: 600px 200px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="car-decoration"></div>
+    
+    <div class="header">
+        <h1>KFZ-Ersatzteile jeglicher Art!</h1>
+        <p>Finden Sie das passende Ersatzteil - bei Robert Zaruba KFZ Ersatzteilhandel!</p>
+    </div>
+
+    <div class="container">
+        <div class="selection-form">
+            <h2 class="form-title">Wählen Sie Ihr Fahrzeug</h2>
+            
+            <div id="loading" class="loading" style="display: none;">
+                Lade Hersteller...
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <form id="vehicleForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="manufacturer">Hersteller wählen</label>
+                        <select id="manufacturer" name="manufacturer" required>
+                            <option value="">- Hersteller wählen -</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="model">Modell wählen</label>
+                        <select id="model" name="model" disabled>
+                            <option value="">- Modell wählen -</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="type">Typ wählen</label>
+                        <select id="type" name="type" disabled>
+                            <option value="">- Typ wählen -</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-primary" id="nextStep" disabled>
+                    Fahrzeug auswählen
+                </button>
+            </form>
+        </div>
+    </div>
+
+   <script>
+    // Konfiguration
+    const API_CONFIG = {
+        baseUrl: 'https://auto-parts-catalog.p.rapidapi.com',
+        headers: {
+            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+            'x-rapidapi-key': '952dce8f7fmsh94f2567ae12820cp167657jsne44aa9dba7a5'
+        }
+    };
+
+    // Liste der beliebten Marken (manufacturerId)
+    const POPULAR_BRANDS = [93, 88]; // Renault, Peugeot
+
+    // DOM Elemente
+    const manufacturerSelect = document.getElementById('manufacturer');
+    const modelSelect = document.getElementById('model');
+    const typeSelect = document.getElementById('type');
+    const nextStepBtn = document.getElementById('nextStep');
+    const loadingDiv = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+
+    // Daten Storage
+    let manufacturersData = [];
+    let modelsData = [];
+    let typesData = [];
+    let selectedManufacturer = null;
+    let selectedModel = null;
+    let selectedType = null;
+
+    // Fallback Modelldaten für verschiedene Hersteller
+    const FALLBACK_MODELS = {
+        88: [ // PEUGEOT
+            { modelId: 1001, model: "206" },
+            { modelId: 1002, model: "207" },
+            { modelId: 1003, model: "208" },
+            { modelId: 1004, model: "301" },
+            { modelId: 1005, model: "307" },
+            { modelId: 1006, model: "308" },
+            { modelId: 1007, model: "407" },
+            { modelId: 1008, model: "508" },
+            { modelId: 1009, model: "Partner" },
+            { modelId: 1010, model: "Expert" }
+        ],
+        93: [ // RENAULT
+            { modelId: 2001, model: "Clio" },
+            { modelId: 2002, model: "Megane" },
+            { modelId: 2003, model: "Scenic" },
+            { modelId: 2004, model: "Laguna" },
+            { modelId: 2005, model: "Twingo" },
+            { modelId: 2006, model: "Kangoo" },
+            { modelId: 2007, model: "Captur" },
+            { modelId: 2008, model: "Talisman" },
+            { modelId: 2009, model: "Master" },
+            { modelId: 2010, model: "Trafic" }
+        ],
+        1: [ // AUDI
+            { modelId: 3001, model: "A1" },
+            { modelId: 3002, model: "A3" },
+            { modelId: 3003, model: "A4" },
+            { modelId: 3004, model: "A6" },
+            { modelId: 3005, model: "Q3" },
+            { modelId: 3006, model: "Q5" },
+            { modelId: 3007, model: "TT" }
+        ],
+        2: [ // BMW
+            { modelId: 4001, model: "1er" },
+            { modelId: 4002, model: "3er" },
+            { modelId: 4003, model: "5er" },
+            { modelId: 4004, model: "7er" },
+            { modelId: 4005, model: "X1" },
+            { modelId: 4006, model: "X3" },
+            { modelId: 4007, model: "X5" }
+        ],
+        3: [ // MERCEDES-BENZ
+            { modelId: 5001, model: "A-Klasse" },
+            { modelId: 5002, model: "B-Klasse" },
+            { modelId: 5003, model: "C-Klasse" },
+            { modelId: 5004, model: "E-Klasse" },
+            { modelId: 5005, model: "S-Klasse" },
+            { modelId: 5006, model: "GLA" },
+            { modelId: 5007, model: "GLC" }
+        ],
+        4: [ // VOLKSWAGEN
+            { modelId: 6001, model: "Polo" },
+            { modelId: 6002, model: "Golf" },
+            { modelId: 6003, model: "Passat" },
+            { modelId: 6004, model: "Tiguan" },
+            { modelId: 6005, model: "Touran" },
+            { modelId: 6006, model: "Caddy" }
+        ]
+    };
+
+    // Fallback Typen-Daten
+    const FALLBACK_TYPES = {
+        1001: [
+            { typeId: 10001, type: "1.1 60PS (1998-2012)" },
+            { typeId: 10002, type: "1.4 75PS (1998-2012)" },
+            { typeId: 10003, type: "1.6 110PS (1998-2012)" },
+            { typeId: 10004, type: "2.0 HDi 90PS (1999-2012)" }
+        ],
+        1006: [
+            { typeId: 10101, type: "1.2 PureTech 110PS (2013-)" },
+            { typeId: 10102, type: "1.6 THP 156PS (2007-2014)" },
+            { typeId: 10103, type: "1.6 HDi 92PS (2007-2014)" },
+            { typeId: 10104, type: "2.0 HDi 150PS (2007-2014)" }
+        ],
+        2001: [
+            { typeId: 20001, type: "1.2 16V 75PS (2005-2012)" },
+            { typeId: 20002, type: "1.4 16V 98PS (2005-2012)" },
+            { typeId: 20003, type: "1.6 16V 110PS (2005-2012)" },
+            { typeId: 20004, type: "1.5 dCi 85PS (2005-2012)" }
+        ],
+        2002: [
+            { typeId: 20101, type: "1.6 16V 110PS (2008-2016)" },
+            { typeId: 20102, type: "2.0 16V 140PS (2008-2016)" },
+            { typeId: 20103, type: "1.5 dCi 90PS (2008-2016)" },
+            { typeId: 20104, type: "1.9 dCi 130PS (2008-2016)" }
+        ],
+        3002: [
+            { typeId: 30001, type: "1.4 TFSI 125PS (2012-)" },
+            { typeId: 30002, type: "1.8 TFSI 180PS (2012-)" },
+            { typeId: 30003, type: "2.0 TFSI 190PS (2012-)" },
+            { typeId: 30004, type: "2.0 TDI 150PS (2012-)" }
+        ],
+        4002: [
+            { typeId: 40001, type: "318i 136PS (2015-)" },
+            { typeId: 40002, type: "320i 184PS (2015-)" },
+            { typeId: 40003, type: "330i 252PS (2015-)" },
+            { typeId: 40004, type: "318d 150PS (2015-)" }
+        ],
+        default: [
+            { typeId: 90001, type: "1.0 Benzin 65PS" },
+            { typeId: 90002, type: "1.2 Benzin 82PS" },
+            { typeId: 90003, type: "1.4 Benzin 100PS" },
+            { typeId: 90004, type: "1.6 Benzin 120PS" },
+            { typeId: 90005, type: "1.6 Diesel 90PS" },
+            { typeId: 90006, type: "2.0 Diesel 140PS" }
+        ]
+    };
+
+    // ----------------------------------------------------
+    // Hilfsfunktionen
+    function showLoading(show = true) {
+        loadingDiv.style.display = show ? 'block' : 'none';
+    }
+
+    function showError(message) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
+
+    // Hersteller laden
+    async function fetchManufacturers() {
+        showLoading(true);
+        try {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const targetUrl = encodeURIComponent(`${API_CONFIG.baseUrl}/manufacturers/list/lang-id/1/country-filter-id/1/type-id/1`);
+            
+            const response = await fetch(`${proxyUrl}${targetUrl}`, {
+                method: 'GET',
+                headers: API_CONFIG.headers
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            manufacturersData = data.data || [];
+
+            if (!manufacturersData.length) {
+                manufacturersData = [
+                    { manufacturerId: 88, brand: "PEUGEOT" },
+                    { manufacturerId: 93, brand: "RENAULT" },
+                    { manufacturerId: 1, brand: "AUDI" },
+                    { manufacturerId: 2, brand: "BMW" },
+                    { manufacturerId: 3, brand: "MERCEDES-BENZ" },
+                    { manufacturerId: 4, brand: "VOLKSWAGEN" }
+                ];
+            }
+            populateManufacturers();
+        } catch (error) {
+            console.error(error);
+            showError('API nicht erreichbar, Beispieldaten werden genutzt.');
+            manufacturersData = [
+                { manufacturerId: 88, brand: "PEUGEOT" },
+                { manufacturerId: 93, brand: "RENAULT" },
+                { manufacturerId: 1, brand: "AUDI" },
+                { manufacturerId: 2, brand: "BMW" },
+                { manufacturerId: 3, brand: "MERCEDES-BENZ" },
+                { manufacturerId: 4, brand: "VOLKSWAGEN" }
+            ];
+            populateManufacturers();
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function populateManufacturers() {
+        manufacturerSelect.innerHTML = '<option value="">- Hersteller wählen -</option>';
+        manufacturersData.sort((a, b) => a.brand.localeCompare(b.brand));
+        manufacturersData.forEach(manufacturer => {
+            const option = document.createElement('option');
+            option.value = manufacturer.manufacturerId;
+            option.textContent = manufacturer.brand;
+            manufacturerSelect.appendChild(option);
+        });
+    }
+
+    async function fetchModels(manufacturerId) {
+        showLoading(true);
+        try {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const targetUrl = encodeURIComponent(`${API_CONFIG.baseUrl}/models/list/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`);
+            
+            const response = await fetch(`${proxyUrl}${targetUrl}`, {
+                method: 'GET',
+                headers: API_CONFIG.headers
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            modelsData = data.data || FALLBACK_MODELS[manufacturerId] || [];
+            populateModels();
+        } catch (error) {
+            console.error(error);
+            modelsData = FALLBACK_MODELS[manufacturerId] || [];
+            populateModels();
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function populateModels() {
+        modelSelect.innerHTML = '<option value="">- Modell wählen -</option>';
+        modelsData.sort((a, b) => a.model.localeCompare(b.model));
+        modelsData.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.modelId;
+            option.textContent = model.model;
+            modelSelect.appendChild(option);
+        });
+        modelSelect.disabled = false;
+    }
+
+    async function fetchTypes(modelId, manufacturerId) {
+        showLoading(true);
+        try {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const targetUrl = encodeURIComponent(`${API_CONFIG.baseUrl}/types/list-vehicles-types/${modelId}/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`);
+            
+            const response = await fetch(`${proxyUrl}${targetUrl}`, {
+                method: 'GET',
+                headers: API_CONFIG.headers
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            typesData = data.data || FALLBACK_TYPES[modelId] || FALLBACK_TYPES.default;
+            populateTypes();
+        } catch (error) {
+            console.error(error);
+            typesData = FALLBACK_TYPES[modelId] || FALLBACK_TYPES.default;
+            populateTypes();
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function populateTypes() {
+        typeSelect.innerHTML = '<option value="">- Typ wählen -</option>';
+        typesData.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.typeId;
+            option.textContent = type.type;
+            typeSelect.appendChild(option);
+        });
+        typeSelect.disabled = false;
+    }
+
+    function updateNextButton() {
+        nextStepBtn.disabled = !(manufacturerSelect.value && modelSelect.value && typeSelect.value);
+    }
+
+    // Events
+    manufacturerSelect.addEventListener('change', function() {
+        if (this.value) {
+            selectedManufacturer = manufacturersData.find(m => m.manufacturerId == this.value);
+            fetchModels(this.value);
+            modelSelect.disabled = true;
+            typeSelect.disabled = true;
+        }
+        updateNextButton();
+    });
+
+    modelSelect.addEventListener('change', function() {
+        if (this.value) {
+            selectedModel = modelsData.find(m => m.modelId == this.value);
+            fetchTypes(this.value, selectedManufacturer.manufacturerId);
+            typeSelect.disabled = true;
+        }
+        updateNextButton();
+    });
+
+    typeSelect.addEventListener('change', function() {
+        if (this.value) {
+            selectedType = typesData.find(t => t.typeId == this.value);
+        }
+        updateNextButton();
+    });
+
+    nextStepBtn.addEventListener('click', function() {
+        alert(`Fahrzeug ausgewählt:\nHersteller: ${selectedManufacturer.brand}\nModell: ${selectedModel.model}\nTyp: ${selectedType.type}`);
+    });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', fetchManufacturers);
+</script>
+
+</body>
+</html>
