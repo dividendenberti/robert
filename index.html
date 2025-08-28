@@ -3,619 +3,1842 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>n8n Automatisierung - Professionelle Workflow-Lösungen</title>
-    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #667eea;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo::before {
-            content: "⚡";
-            margin-right: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .hero {
-            text-align: center;
-            padding: 5rem 0;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"><animate attributeName="r" values="100;150;100" dur="4s" repeatCount="indefinite"/></circle><circle cx="800" cy="300" r="80" fill="url(%23a)"><animate attributeName="r" values="80;120;80" dur="3s" repeatCount="indefinite"/></circle><circle cx="500" cy="700" r="120" fill="url(%23a)"><animate attributeName="r" values="120;180;120" dur="5s" repeatCount="indefinite"/></circle></svg>');
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 1rem 2rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
-            transition: all 0.3s ease;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(238, 90, 36, 0.4);
-        }
-
-        .services {
-            background: white;
-            padding: 5rem 0;
-            margin-top: -2rem;
-            border-radius: 2rem 2rem 0 0;
-            position: relative;
-            z-index: 10;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #333;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .service-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .service-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .service-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .service-card p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .about {
-            background: #f8f9fa;
-            padding: 5rem 0;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: #333;
-        }
-
-        .about-text p {
-            color: #666;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .features {
-            list-style: none;
-            margin-top: 2rem;
-        }
-
-        .features li {
-            padding: 0.5rem 0;
-            position: relative;
-            padding-left: 2rem;
-            color: #555;
-        }
-
-        .features li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .about-visual {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .workflow-demo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 2rem 0;
-        }
-
-        .workflow-step {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            backdrop-filter: blur(10px);
-            animation: pulse 2s infinite;
-        }
-
-        .workflow-step:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-
-        .workflow-step:nth-child(3) {
-            animation-delay: 1s;
-        }
-
-        .contact {
-            background: #333;
-            color: white;
-            padding: 5rem 0;
-        }
-
-        .contact-content {
-            text-align: center;
-        }
-
-        .contact h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .contact-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 1rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .contact-item h3 {
-            margin-bottom: 1rem;
-            color: #667eea;
-        }
-
-        /* Chat Bot Styling Override */
-        .chat-window {
-            z-index: 10000 !important;
-        }
-        
-        .chat-toggle {
-            background: linear-gradient(135deg, #667eea, #764ba2) !important;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
-            border: none !important;
-            animation: chatPulse 2s infinite;
-        }
-        
-        .chat-toggle:hover {
-            transform: scale(1.1) !important;
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4) !important;
-        }
-        
-        @keyframes chatPulse {
-            0%, 100% {
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            }
-            50% {
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-            }
-        }
-
-        footer {
-            background: #222;
-            color: #999;
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .workflow-demo {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-    </style>
+    <title>Auto Parts API Test - Version 43</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <nav class="container">
-            <a href="#" class="logo">n8n Solutions</a>
-            <ul class="nav-links">
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">Über uns</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <div class="container">
-            <h1>KI-gestützte Automatisierung neu gedacht</h1>
-            <p>Wir revolutionieren Ihre Geschäftsprozesse mit intelligenten n8n-Workflows und modernster KI-Integration für maximale Effizienz</p>
-            <a href="#contact" class="cta-button">Kostenloses Beratungsgespräch</a>
-        </div>
-    </section>
-
-    <section id="services" class="services">
-        <div class="container">
-            <h2 class="section-title">Unsere Expertise</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🔄</div>
-                    <h3>Workflow-Automatisierung</h3>
-                    <p>Entwicklung individueller n8n-Workflows zur Automatisierung wiederkehrender Aufgaben und Optimierung Ihrer Geschäftsprozesse.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🔗</div>
-                    <h3>API-Integration</h3>
-                    <p>Nahtlose Verbindung verschiedener Systeme und Services durch professionelle API-Integrationen mit n8n.</p>
-                </div>
-                <div class="service-card">
-                    <div class icon">📊</div>
-                    <h3>Datenverarbeitung</h3>
-                    <p>Automatisierte Datenerfassung, -transformation und -analyse für datengetriebene Entscheidungen.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📧</div>
-                    <h3>E-Mail Marketing</h3>
-                    <p>Intelligente E-Mail-Kampagnen und Follow-up-Sequenzen mit personalisierten, automatisierten Workflows.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📱</div>
-                    <h3>Social Media</h3>
-                    <p>Automatisierung von Social Media Posts, Monitoring und Engagement für eine konsistente Online-Präsenz.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🎯</div>
-                    <h3>CRM-Automatisierung</h3>
-                    <p>Optimierung Ihres Kundenmanagements durch intelligente CRM-Workflows und Lead-Nurturing-Prozesse.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🤖</div>
-                    <h3>KI-Integration</h3>
-                    <p>Intelligente Automatisierung mit ChatGPT, Claude, Gemini und anderen KI-Services für smarte Entscheidungen und Inhaltsverarbeitung.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🧠</div>
-                    <h3>KI-Assistenten</h3>
-                    <p>Entwicklung maßgeschneiderte KI-Assistenten für Kundenservice, Content-Erstellung und automatisierte Datenanalyse.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>Warum KI + n8n Automatisierung?</h2>
-                    <p>Als spezialisierter n8n-Dienstleister verwandeln wir komplexe, manuelle Prozesse in elegante, automatisierte Workflows. Mit modernster KI-Integration schaffen wir intelligente Lösungen, die nicht nur automatisieren, sondern auch smart entscheiden.</p>
-                    <p>Kombinieren Sie die Power von n8n mit führenden KI-Services wie OpenAI, Claude, Gemini und lokalen KI-Modellen für maximale Effizienz und Innovation.</p>
-                    <ul class="features">
-                        <li>KI-gestützte Entscheidungsfindung in Workflows</li>
-                        <li>Integration von ChatGPT, Claude, Gemini & Co.</li>
-                        <li>Kosteneffiziente Alternative zu Zapier und anderen Tools</li>
-                        <li>Open-Source Flexibilität mit Enterprise-Features</li>
-                        <li>Vollständige Kontrolle über Ihre Daten</li>
-                        <li>Unbegrenzte Workflows ohne versteckte Kosten</li>
-                        <li>Self-Hosted oder Cloud-Lösungen</li>
-                        <li>24/7 Support und Wartung</li>
-                    </ul>
-                </div>
-                <div class="about-visual">
-                    <h3>KI-Enhanced Workflow</h3>
-                    <div class="workflow-demo">
-                        <div class="workflow-step">📥</div>
-                        <div class="workflow-step">🤖</div>
-                        <div class="workflow-step">⚙️</div>
-                        <div class="workflow-step">📤</div>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Login Section -->
+            <div id="loginSection" class="max-w-md mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+                    <div class="text-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE</h1>
                     </div>
-                    <p>Daten sammeln → KI analysiert → Intelligent verarbeiten → Smart weiterleiten</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="contact-content">
-                <h2>Bereit für die Automatisierung?</h2>
-                <p>Lassen Sie uns gemeinsam Ihre Prozesse optimieren und Ihr Unternehmen auf die nächste Stufe bringen.</p>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <h3>📧 E-Mail</h3>
-                        <p>office@zaruba-edv.at</p>
+                    
+                    <form id="loginForm" class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+                                👤 Benutzername
+                            </label>
+                            <input type="text" id="username" name="username" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Ihr Benutzername">
+                        </div>
+                        
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                                🔒 Kennwort
+                            </label>
+                            <input type="password" id="password" name="password" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Ihr Kennwort">
+                        </div>
+                        
+                        <button type="submit" id="loginBtn" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
+                            🔑 Anmelden
+                        </button>
+                    </form>
+                    
+                    <!-- Login Error Message -->
+                    <div id="loginError" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                        <strong>Fehler:</strong> <span id="loginErrorMessage"></span>
                     </div>
-                    <div class="contact-item">
-                        <h3>📞 Telefon</h3>
-                        <p>+43 677 61381622</p>
-                    </div>
-                    <div class="contact-item">
-                        <h3>🌐 Website</h3>
-                        <p>www.ki-berti.at</p>
-                    </div>
-                    <div class="contact-item">
-                        <h3>⏰ Verfügbarkeit</h3>
-                        <p>Mo-Fr: 9:00-18:00 Uhr</p>
+                    
+                    <!-- Login Loading -->
+                    <div id="loginLoading" class="hidden text-center mt-4">
+                        <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <p class="text-gray-600 mt-2 text-sm">Anmeldung läuft...</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 n8n Solutions by Zaruba EDV. Alle Rechte vorbehalten.</p>
+            <!-- Main App Section (hidden until login) -->
+            <div id="mainApp" class="hidden">
+                <!-- Header -->
+                <div class="text-center mb-6">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE</h1>
+                </div>
+
+                <!-- User Info Header with Buttons -->
+                <div class="flex justify-between items-center mb-8 bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center">
+                        <span class="text-green-600 mr-2">✅</span>
+                        <span class="text-sm text-gray-600">Angemeldet als:</span>
+                        <span id="customerNumber" class="ml-2 font-semibold text-gray-800"></span>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button id="loadCountries" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300">
+                            📡 Hersteller laden
+                        </button>
+                        <button id="restartBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300">
+                            🔄 Neustart
+                        </button>
+                        <button id="logoutBtn" class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded transition duration-200">
+                            🚪 Abmelden
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loading" class="hidden text-center mb-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-gray-600 mt-2">Lade Daten...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-8">
+                    <strong>Fehler:</strong> <span id="errorMessage"></span>
+                </div>
+
+                <!-- Results Container -->
+                <div id="results" class="hidden">
+                    <!-- Selection Header -->
+                    <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Manufacturer Selection -->
+                            <div>
+                                <label for="manufacturerSelect" class="block text-xs font-medium text-gray-700 mb-1">
+                                    🏭 Hersteller auswählen
+                                </label>
+                                <select id="manufacturerSelect" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                                    <option value="">-- Bitte wählen --</option>
+                                </select>
+                            </div>
+
+                            <!-- Model Selection -->
+                            <div id="modelSection" class="hidden">
+                                <label for="modelSelect" class="block text-xs font-medium text-gray-700 mb-1">
+                                    🚙 Modell auswählen
+                                </label>
+                                <div id="modelLoading" class="hidden text-center mb-2">
+                                    <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                    <p class="text-gray-600 mt-1 text-xs">Lade...</p>
+                                </div>
+                                <select id="modelSelect" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                                    <option value="">-- Erst Hersteller wählen --</option>
+                                </select>
+                            </div>
+
+                            <!-- Type Selection -->
+                            <div id="typeSection" class="hidden">
+                                <label for="typeSelect" class="block text-xs font-medium text-gray-700 mb-1">
+                                    ⛽ Fahrzeugtyp auswählen
+                                </label>
+                                <div id="typeLoading" class="hidden text-center mb-2">
+                                    <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                    <p class="text-gray-600 mt-1 text-xs">Lade...</p>
+                                </div>
+                                <select id="typeSelect" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900">
+                                    <option value="">-- Erst Modell wählen --</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Categories Button -->
+                        <div class="mt-4 text-center">
+                            <button id="loadCategoriesBtn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300 text-sm" style="display: none;">
+                                🔧 Ersatzteil-Kategorien anzeigen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Categories and Parts Section -->
+                    <div id="categoriesSection" class="hidden bg-white rounded-lg shadow-lg p-6 mb-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Left Column: Categories -->
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-800 mb-4">🔧 Ersatzteil-Kategorien</h2>
+                                
+                                <div id="categoriesLoading" class="hidden text-center mb-4">
+                                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                                    <p class="text-gray-600 mt-2 text-sm">Lade Kategorien...</p>
+                                </div>
+                                
+                                <div id="categoriesDisplay" class="space-y-2 text-sm max-h-96 overflow-y-auto">
+                                    <!-- Categories will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column: Parts -->
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-semibold text-gray-800">🔩 Ersatzteile</h2>
+                                    <button id="backToPartsBtn" class="hidden text-sm bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded transition duration-200">
+                                        ← Zurück zur Liste
+                                    </button>
+                                </div>
+                                
+                                <div id="partsDisplay" class="space-y-3">
+                                    <div class="text-gray-500 text-sm italic">
+                                        Wählen Sie eine Kategorie aus, um Ersatzteile anzuzeigen
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Part Detail Modal -->
+                    <div id="partDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-xl font-semibold text-gray-800">🔍 Ersatzteil Details</h3>
+                                    <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+                                </div>
+                                
+                                <div id="partDetailContent">
+                                    <!-- Detail content will be populated here -->
+                                </div>
+                                
+                                <div class="mt-6 flex justify-end space-x-3">
+                                    <button id="addToCartBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
+                                        🛒 In Warenkorb
+                                    </button>
+                                    <button id="closeModalBtn2" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                                        Schließen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopping Cart -->
+                    <div id="shoppingCart" class="hidden bg-white rounded-lg shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">🛒 Warenkorb</h2>
+                            <button id="clearCartBtn" class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-200">
+                                🗑️ Leeren
+                            </button>
+                        </div>
+                        
+                        <div id="cartItems" class="space-y-3 mb-4">
+                            <!-- Cart items will be populated here -->
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="font-semibold">Gesamt:</span>
+                                <span id="cartTotal" class="font-semibold text-lg">0 Artikel</span>
+                            </div>
+                            
+                            <button id="checkoutBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+                                📋 Bestellung senden
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </footer>
+    </div>
 
     <script>
-        // Smooth scrolling für Navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+        // Global variables
+        let currentApiKey = '';
+        let currentCustomerNumber = '';
+        let shoppingCartItems = [];
+        
+        const loadButton = document.getElementById('loadCountries');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const results = document.getElementById('results');
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginLoading = document.getElementById('loginLoading');
+            const loginError = document.getElementById('loginError');
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtn.textContent = '⏳ Anmeldung läuft...';
+            loginLoading.classList.remove('hidden');
+            loginError.classList.add('hidden');
+            
+            try {
+                const response = await fetch('https://nachtn-new.zaruba-edv.at/webhook/6600021c-29a6-4ee9-995e-de4b32898dad', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        benutzer: username,
+                        kennwort: password
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                if (data.success === "true" || data.success === true) {
+                    // Successful login
+                    currentApiKey = data.apiKey;
+                    currentCustomerNumber = username;
+                    
+                    // Show main app and hide login
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    document.getElementById('customerNumber').textContent = currentCustomerNumber;
+                    
+                    console.log('Login successful, API Key:', currentApiKey);
+                } else {
+                    // Failed login
+                    throw new Error(data.message || 'Ungültige Anmeldedaten');
+                }
+                
+            } catch (err) {
+                console.error('Login error:', err);
+                document.getElementById('loginErrorMessage').textContent = err.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔑 Anmelden';
+                loginLoading.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Clear stored data
+            currentApiKey = '';
+            currentCustomerNumber = '';
+            shoppingCartItems = [];
+            
+            // Reset form
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').classList.add('hidden');
+            
+            // Show login and hide main app
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            
+            // Reset main app state
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('categoriesSection').classList.add('hidden');
+            document.getElementById('shoppingCart').classList.add('hidden');
+            document.getElementById('loadCategoriesBtn').style.display = 'none';
+            updateCartDisplay();
+        });
+
+        // Restart functionality
+        document.getElementById('restartBtn').addEventListener('click', function() {
+            if (confirm('Möchten Sie die Suche wirklich neu starten? Alle Auswahlen und der Warenkorb werden zurückgesetzt.')) {
+                // Clear shopping cart
+                shoppingCartItems = [];
+                updateCartDisplay();
+                
+                // Reset all selections
+                document.getElementById('manufacturerSelect').value = '';
+                document.getElementById('modelSelect').innerHTML = '<option value="">-- Erst Hersteller wählen --</option>';
+                document.getElementById('typeSelect').innerHTML = '<option value="">-- Erst Modell wählen --</option>';
+                
+                // Hide sections
+                document.getElementById('modelSection').classList.add('hidden');
+                document.getElementById('typeSection').classList.add('hidden');
+                document.getElementById('categoriesSection').classList.add('hidden');
+                document.getElementById('results').classList.add('hidden');
+                document.getElementById('loadCategoriesBtn').style.display = 'none';
+                
+                // Clear error messages
+                document.getElementById('error').classList.add('hidden');
+                
+                // Show success message
+                showNotification('🔄 Suche wurde zurückgesetzt!', 'info');
+            }
+        });
+
+        // Modal functionality
+        async function openPartDetailModal(partData) {
+            const modal = document.getElementById('partDetailModal');
+            const content = document.getElementById('partDetailContent');
+            
+            // Extract part information
+            let articleId = partData.articleId || partData.article_id || partData.id || '';
+            let articleNo = partData.articleNo || partData.articleNumber || partData.article_no || partData.article_number || '';
+            let supplierName = partData.supplierName || partData.supplier_name || partData.brand || partData.brandName || '';
+            let articleProductName = partData.articleProductName || partData.article_product_name || partData.productName || partData.name || partData.title || '';
+            let imageLink = partData.s3ImageLink || partData.s3_image_link || partData.imageLink || partData.image_link || partData.image || partData.imageUrl || partData.image_url || '';
+            let price = partData.price || partData.cost || partData.amount || '';
+            let availability = partData.availability || partData.stock || partData.inStock || '';
+            let description = partData.description || partData.details || partData.info || '';
+            
+            // Show loading state first
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="text-gray-600 mt-2">Lade Artikeldetails...</p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            
+            // Load detailed specifications if articleId is available
+            let detailedSpecs = [];
+            let eanNumbers = '';
+            let oemNumbers = [];
+            
+            if (articleId && currentApiKey) {
+                try {
+                    const response = await fetch(`https://auto-parts-catalog.p.rapidapi.com/articles/details/${articleId}/lang-id/1/country-filter-id/1`, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                            'x-rapidapi-key': currentApiKey
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const detailData = await response.json();
+                        console.log('Article details received:', detailData);
+                        
+                        // Extract specifications
+                        if (detailData.articleAllSpecifications && Array.isArray(detailData.articleAllSpecifications)) {
+                            detailedSpecs = detailData.articleAllSpecifications;
+                        }
+                        
+                        // Extract EAN numbers
+                        if (detailData.articleEanNo && detailData.articleEanNo.eanNumbers) {
+                            eanNumbers = detailData.articleEanNo.eanNumbers.trim();
+                        }
+                        
+                        // Extract OEM numbers
+                        if (detailData.articleOemNo && Array.isArray(detailData.articleOemNo)) {
+                            oemNumbers = detailData.articleOemNo;
+                        }
+                        
+                        // Update article info if available in detail response
+                        if (detailData.article) {
+                            articleNo = detailData.article.articleNo || articleNo;
+                            supplierName = detailData.article.supplierName || supplierName;
+                            articleProductName = detailData.article.articleProductName || articleProductName;
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading article details:', err);
+                }
+            }
+            
+            // Build the detailed content
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        ${imageLink ? `
+                            <img src="${imageLink}" 
+                                 alt="${articleProductName}" 
+                                 class="w-full h-64 object-cover rounded-lg border"
+                                 onerror="this.src=''; this.alt='Bild nicht verfügbar'; this.className='w-full h-64 bg-gray-200 rounded-lg border flex items-center justify-center text-gray-500';">
+                        ` : `
+                            <div class="w-full h-64 bg-gray-200 rounded-lg border flex items-center justify-center">
+                                <span class="text-gray-500">Kein Bild verfügbar</span>
+                            </div>
+                        `}
+                        
+                        ${eanNumbers ? `
+                            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                <h5 class="font-medium text-blue-800 mb-2">📊 EAN-Nummer</h5>
+                                <p class="text-sm text-blue-700 font-mono">${eanNumbers}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${oemNumbers.length > 0 ? `
+                            <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                                <h5 class="font-medium text-green-800 mb-2">🔧 OEM-Nummern</h5>
+                                <div class="space-y-1">
+                                    ${oemNumbers.map(oem => `
+                                        <div class="text-sm">
+                                            <span class="font-medium text-green-700">${oem.oemBrand}:</span>
+                                            <span class="text-green-600 font-mono ml-2">${oem.oemDisplayNo}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="space-y-4">
+                        ${articleProductName ? `
+                            <h4 class="text-lg font-semibold text-gray-800">${articleProductName}</h4>
+                        ` : ''}
+                        
+                        <div class="space-y-2 text-sm">
+                            ${articleNo ? `
+                                <div class="flex justify-between">
+                                    <span class="font-medium text-gray-600">Artikel-Nr.:</span>
+                                    <span class="text-gray-800 font-mono">${articleNo}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${supplierName ? `
+                                <div class="flex justify-between">
+                                    <span class="font-medium text-gray-600">Lieferant:</span>
+                                    <span class="text-gray-800">${supplierName}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${articleId ? `
+                                <div class="flex justify-between">
+                                    <span class="font-medium text-gray-600">Artikel-ID:</span>
+                                    <span class="text-gray-800 font-mono">${articleId}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${price ? `
+                                <div class="flex justify-between">
+                                    <span class="font-medium text-gray-600">Preis:</span>
+                                    <span class="text-gray-800 font-semibold">${price}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${availability ? `
+                                <div class="flex justify-between">
+                                    <span class="font-medium text-gray-600">Verfügbarkeit:</span>
+                                    <span class="text-gray-800">${availability}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${description ? `
+                            <div class="mt-4">
+                                <h5 class="font-medium text-gray-600 mb-2">Beschreibung:</h5>
+                                <p class="text-sm text-gray-800">${description}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${detailedSpecs.length > 0 ? `
+                            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                <h5 class="font-medium text-gray-800 mb-3 flex items-center">
+                                    ⚙️ Technische Spezifikationen
+                                </h5>
+                                <div class="space-y-2">
+                                    ${detailedSpecs.map(spec => `
+                                        <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-b-0">
+                                            <span class="text-sm font-medium text-gray-600">${spec.criteriaName}:</span>
+                                            <span class="text-sm text-gray-800 font-semibold">${spec.criteriaValue}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                                <h5 class="font-medium text-yellow-800 mb-2">⚙️ Technische Daten</h5>
+                                <p class="text-sm text-yellow-700">Keine detaillierten Spezifikationen verfügbar</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            // Store part data for adding to cart
+            document.getElementById('addToCartBtn').onclick = () => addToCart(partData);
+        }
+
+        function closePartDetailModal() {
+            document.getElementById('partDetailModal').classList.add('hidden');
+        }
+
+        // Close modal event listeners
+        document.getElementById('closeModalBtn').addEventListener('click', closePartDetailModal);
+        document.getElementById('closeModalBtn2').addEventListener('click', closePartDetailModal);
+
+        // Close modal when clicking outside
+        document.getElementById('partDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePartDetailModal();
+            }
+        });
+
+        // Shopping cart functionality
+        function addToCart(partData) {
+            const existingItem = shoppingCartItems.find(item => 
+                (item.articleNo || item.articleNumber) === (partData.articleNo || partData.articleNumber)
+            );
+            
+            // Get minimum quantity from pricing info
+            const minQuantity = parseInt(partData.pricingInfo?.mindestmenge || '1') || 1;
+            
+            if (existingItem) {
+                // Add minimum quantity to existing item
+                existingItem.quantity += minQuantity;
+            } else {
+                // Create new item with minimum quantity
+                shoppingCartItems.push({
+                    ...partData,
+                    quantity: minQuantity,
+                    addedAt: new Date().toISOString()
+                });
+            }
+            
+            updateCartDisplay();
+            closePartDetailModal();
+            
+            // Show success message with quantity info
+            const quantityText = minQuantity > 1 ? ` (${minQuantity} Stück - Mindestmenge)` : '';
+            showNotification(`✅ Artikel zum Warenkorb hinzugefügt${quantityText}!`, 'success');
+        }
+
+        function removeFromCart(articleNo) {
+            shoppingCartItems = shoppingCartItems.filter(item => 
+                (item.articleNo || item.articleNumber) !== articleNo
+            );
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartSection = document.getElementById('shoppingCart');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (shoppingCartItems.length === 0) {
+                cartSection.classList.add('hidden');
+                return;
+            }
+            
+            cartSection.classList.remove('hidden');
+            
+            cartItems.innerHTML = shoppingCartItems.map(item => {
+                let articleNo = item.articleNo || item.articleNumber || '';
+                let supplierName = item.supplierName || item.supplier_name || item.brand || '';
+                let articleProductName = item.articleProductName || item.article_product_name || item.productName || item.name || '';
+                let imageLink = item.s3ImageLink || item.s3_image_link || item.imageLink || '';
+                
+                return `
+                    <div class="flex items-center gap-3 p-3 border border-gray-200 rounded">
+                        ${imageLink ? `
+                            <img src="${imageLink}" 
+                                 alt="${articleProductName}" 
+                                 class="w-12 h-12 object-cover rounded border"
+                                 onerror="this.src=''; this.className='w-12 h-12 bg-gray-200 rounded border flex items-center justify-center text-xs text-gray-500';">
+                        ` : `
+                            <div class="w-12 h-12 bg-gray-200 rounded border flex items-center justify-center">
+                                <span class="text-xs text-gray-500">📦</span>
+                            </div>
+                        `}
+                        
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-sm font-medium text-gray-800 truncate">${articleProductName}</h5>
+                            <p class="text-xs text-gray-600">Art.-Nr.: ${articleNo}</p>
+                            <p class="text-xs text-gray-600">Hersteller: ${supplierName}</p>
+                            <p class="text-xs text-gray-600">Menge: ${item.quantity}${item.pricingInfo?.mindestmenge && parseInt(item.pricingInfo.mindestmenge) > 1 ? ` (Min: ${item.pricingInfo.mindestmenge})` : ''}</p>
+                            ${item.pricingInfo?.preis ? `
+                                <p class="text-xs text-green-600 font-semibold">Preis: €${item.pricingInfo.preis}</p>
+                            ` : ''}
+                        </div>
+                        
+                        <button onclick="removeFromCart('${articleNo}')" 
+                                class="text-red-500 hover:text-red-700 text-sm">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            cartTotal.textContent = `${shoppingCartItems.length} Artikel (${shoppingCartItems.reduce((sum, item) => sum + item.quantity, 0)} Stück)`;
+        }
+
+        // Clear cart
+        document.getElementById('clearCartBtn').addEventListener('click', function() {
+            if (confirm('Möchten Sie den Warenkorb wirklich leeren?')) {
+                shoppingCartItems = [];
+                updateCartDisplay();
+                showNotification('🗑️ Warenkorb geleert', 'info');
+            }
+        });
+
+        // Checkout - Send order to webhook
+        document.getElementById('checkoutBtn').addEventListener('click', async function() {
+            if (shoppingCartItems.length === 0) return;
+            
+            const button = this;
+            const originalText = button.textContent;
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = '⏳ Bestellung wird gesendet...';
+            
+            try {
+                // Prepare order data
+                const orderData = {
+                    kundennummer: currentCustomerNumber,
+                    artikel: shoppingCartItems.map(item => ({
+                        hersteller: item.supplierName || item.supplier_name || item.brand || item.brandName || '',
+                        artikelnummer: item.articleNo || item.articleNumber || item.article_no || item.article_number || '',
+                        menge: item.quantity,
+                        preis: item.pricingInfo?.preis || '0'
+                    }))
+                };
+                
+                console.log('Sending order data:', orderData);
+                
+                const response = await fetch('https://nachtn-new.zaruba-edv.at/webhook/5016e15a-5a31-4da6-b0c3-a42a72182a6b', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Order response:', result);
+                    
+                    // Show success message
+                    showNotification('✅ Bestellung erfolgreich gesendet!', 'success');
+                    
+                    // Clear cart after successful order
+                    shoppingCartItems = [];
+                    updateCartDisplay();
+                    
+                    // Show order summary
+                    alert(`Bestellung erfolgreich gesendet!\n\nKundennummer: ${currentCustomerNumber}\nAnzahl Artikel: ${orderData.artikel.length}\n\nDie Bestellung wird bearbeitet.`);
+                    
+                } else {
+                    throw new Error(`HTTP ${response.status}: Fehler beim Senden der Bestellung`);
+                }
+                
+            } catch (error) {
+                console.error('Order error:', error);
+                showNotification('❌ Fehler beim Senden der Bestellung: ' + error.message, 'error');
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white transition-all duration-300 transform translate-x-full`;
+            
+            switch(type) {
+                case 'success':
+                    notification.classList.add('bg-green-500');
+                    break;
+                case 'error':
+                    notification.classList.add('bg-red-500');
+                    break;
+                default:
+                    notification.classList.add('bg-blue-500');
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Handle manufacturer and model selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const manufacturerSelect = document.getElementById('manufacturerSelect');
+            const modelSection = document.getElementById('modelSection');
+            const modelSelect = document.getElementById('modelSelect');
+            const modelLoading = document.getElementById('modelLoading');
+            const typeSection = document.getElementById('typeSection');
+            const typeSelect = document.getElementById('typeSelect');
+            const typeLoading = document.getElementById('typeLoading');
+
+            manufacturerSelect.addEventListener('change', async function() {
+                if (this.value) {
+                    try {
+                        const selectedData = JSON.parse(this.value);
+                        console.log('Selected manufacturer data:', selectedData);
+                        
+                        // Show model section and load models
+                        modelSection.classList.remove('hidden');
+                        
+                        if (selectedData.id) {
+                            await loadModels(selectedData.id);
+                        } else {
+                            console.error('No manufacturer ID found!');
+                            modelSelect.innerHTML = '<option value="">Keine Hersteller-ID gefunden</option>';
+                        }
+                        
+                    } catch (e) {
+                        console.error('Error parsing manufacturer data:', e);
+                    }
+                } else {
+                    modelSection.classList.add('hidden');
+                    typeSection.classList.add('hidden');
+                }
+            });
+
+            modelSelect.addEventListener('change', async function() {
+                if (this.value) {
+                    try {
+                        const selectedData = JSON.parse(this.value);
+                        
+                        // Show type section and load types
+                        typeSection.classList.remove('hidden');
+                        
+                        // Get manufacturer ID from the current selection
+                        const manufacturerData = JSON.parse(manufacturerSelect.value);
+                        
+                        if (selectedData.id && manufacturerData.id) {
+                            await loadTypes(selectedData.id, manufacturerData.id);
+                        } else {
+                            console.error('Missing model ID or manufacturer ID!');
+                            typeSelect.innerHTML = '<option value="">Fehlende IDs</option>';
+                        }
+                        
+                    } catch (e) {
+                        console.error('Error parsing model data:', e);
+                    }
+                } else {
+                    typeSection.classList.add('hidden');
+                }
+            });
+
+            typeSelect.addEventListener('change', function() {
+                if (this.value) {
+                    // Show the load categories button when a type is selected
+                    document.getElementById('loadCategoriesBtn').style.display = 'inline-block';
+                } else {
+                    // Hide the button and categories section when no type is selected
+                    document.getElementById('loadCategoriesBtn').style.display = 'none';
+                    document.getElementById('categoriesSection').classList.add('hidden');
+                }
+            });
+
+            // Categories button event listener
+            document.getElementById('loadCategoriesBtn').addEventListener('click', async function() {
+                const manufacturerData = JSON.parse(manufacturerSelect.value);
+                const typeData = JSON.parse(typeSelect.value);
+                
+                if (manufacturerData.id && typeData.id) {
+                    await loadCategories(typeData.id, manufacturerData.id);
+                } else {
+                    console.error('Missing manufacturer ID or vehicle ID!');
+                }
+            });
+
+            async function loadModels(manufacturerId) {
+                if (!manufacturerId) return;
+
+                // Show loading
+                modelLoading.classList.remove('hidden');
+                modelSelect.innerHTML = '<option value="">Lade Modelle...</option>';
+
+                try {
+                    const response = await fetch(`https://auto-parts-catalog.p.rapidapi.com/models/list/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                            'x-rapidapi-key': currentApiKey
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        displayModels(data);
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${data.message || 'Fehler beim Laden der Modelle'}`);
+                    }
+
+                } catch (err) {
+                    console.error('Error loading models:', err);
+                    modelSelect.innerHTML = '<option value="">Fehler beim Laden der Modelle</option>';
+                } finally {
+                    modelLoading.classList.add('hidden');
+                }
+            }
+
+            function displayModels(data) {
+                console.log('Model data received:', data);
+                
+                // Try different possible data structures
+                let models = [];
+                
+                if (data.models) {
+                    models = data.models;
+                } else if (data.data) {
+                    models = data.data;
+                } else if (data.results) {
+                    models = data.results;
+                } else if (data.items) {
+                    models = data.items;
+                } else if (data.list) {
+                    models = data.list;
+                } else if (Array.isArray(data)) {
+                    models = data;
+                } else if (typeof data === 'object') {
+                    const keys = Object.keys(data);
+                    for (let key of keys) {
+                        if (Array.isArray(data[key])) {
+                            models = data[key];
+                            break;
+                        }
+                    }
+                }
+
+                // Populate dropdown menu
+                modelSelect.innerHTML = '<option value="">-- Bitte wählen --</option>';
+
+                if (Array.isArray(models) && models.length > 0) {
+                    models.forEach((model, index) => {
+                        let modelName = 'Unbekannt';
+                        let modelId = '';
+                        
+                        if (typeof model === 'string') {
+                            modelName = model;
+                        } else if (typeof model === 'object' && model !== null) {
+                            modelName = model.modelName || 
+                                       model.name || 
+                                       model.model || 
+                                       model.title || 
+                                       model.label ||
+                                       model.model_name ||
+                                       model.description ||
+                                       model.text ||
+                                       model.display_name ||
+                                       model.full_name ||
+                                       `Modell ${index + 1}`;
+                            
+                            modelId = model.modelId || 
+                                     model.id || 
+                                     model.code || 
+                                     model.key || 
+                                     model.value || 
+                                     model.model_id ||
+                                     model.identifier ||
+                                     index.toString();
+                        }
+
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({name: modelName, id: modelId, data: model});
+                        option.textContent = modelName;
+                        modelSelect.appendChild(option);
+                    });
+                } else {
+                    modelSelect.innerHTML = '<option value="">Keine Modelle gefunden</option>';
+                }
+            }
+
+            async function loadTypes(modelId, manufacturerId) {
+                if (!modelId || !manufacturerId) return;
+
+                // Show loading
+                typeLoading.classList.remove('hidden');
+                typeSelect.innerHTML = '<option value="">Lade Fahrzeugtypen...</option>';
+                
+                // Hide the categories button and section
+                document.getElementById('loadCategoriesBtn').style.display = 'none';
+                document.getElementById('categoriesSection').classList.add('hidden');
+
+                try {
+                    const response = await fetch(`https://auto-parts-catalog.p.rapidapi.com/types/list-vehicles-types/${modelId}/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                            'x-rapidapi-key': currentApiKey
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        displayTypes(data);
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${data.message || 'Fehler beim Laden der Fahrzeugtypen'}`);
+                    }
+
+                } catch (err) {
+                    console.error('Error loading types:', err);
+                    typeSelect.innerHTML = '<option value="">Fehler beim Laden der Fahrzeugtypen</option>';
+                } finally {
+                    typeLoading.classList.add('hidden');
+                }
+            }
+
+            function displayTypes(data) {
+                console.log('Type data received:', data);
+                
+                // Try different possible data structures
+                let types = [];
+                
+                if (data.types) {
+                    types = data.types;
+                } else if (data.data) {
+                    types = data.data;
+                } else if (data.results) {
+                    types = data.results;
+                } else if (data.items) {
+                    types = data.items;
+                } else if (data.list) {
+                    types = data.list;
+                } else if (data.vehicles) {
+                    types = data.vehicles;
+                } else if (Array.isArray(data)) {
+                    types = data;
+                } else if (typeof data === 'object') {
+                    const keys = Object.keys(data);
+                    for (let key of keys) {
+                        if (Array.isArray(data[key])) {
+                            types = data[key];
+                            break;
+                        }
+                    }
+                }
+
+                // Sort types by fuel type (Benzin first, then Diesel, then others)
+                if (Array.isArray(types) && types.length > 0) {
+                    types.sort((a, b) => {
+                        const fuelA = (a.fuelType || a.fuel_type || a.fuel || '').toLowerCase();
+                        const fuelB = (b.fuelType || b.fuel_type || b.fuel || '').toLowerCase();
+                        
+                        // Priority order: benzin, diesel, others
+                        const getPriority = (fuel) => {
+                            if (fuel.includes('benzin') || fuel.includes('petrol') || fuel.includes('gasoline')) return 1;
+                            if (fuel.includes('diesel')) return 2;
+                            return 3;
+                        };
+                        
+                        const priorityA = getPriority(fuelA);
+                        const priorityB = getPriority(fuelB);
+                        
+                        if (priorityA !== priorityB) {
+                            return priorityA - priorityB;
+                        }
+                        
+                        // If same fuel type, sort alphabetically
+                        return fuelA.localeCompare(fuelB);
                     });
                 }
-            });
-        });
 
-        // Animation beim Scrollen
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+                // Populate dropdown menu
+                typeSelect.innerHTML = '<option value="">-- Bitte wählen --</option>';
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                if (Array.isArray(types) && types.length > 0) {
+                    types.forEach((type, index) => {
+                        let typeName = 'Unbekannt';
+                        let typeId = '';
+                        
+                        if (typeof type === 'string') {
+                            typeName = type;
+                        } else if (typeof type === 'object' && type !== null) {
+                            // Extract technical data
+                            let fuelType = type.fuelType || type.fuel_type || type.fuel || '';
+                            let engineName = type.typeEngineName || type.type_engine_name || type.engineName || type.engine_name || type.engine || '';
+                            let capacityTech = type.capacityTech || type.capacity_tech || type.capacity || '';
+                            let powerKw = type.powerKw || type.power_kw || type.power || '';
+                            let powerPs = type.powerPs || type.power_ps || type.hp || '';
+                            
+                            // Format capacity (remove decimals, add ccm)
+                            let formattedCapacity = '';
+                            if (capacityTech) {
+                                const capacity = Math.round(parseFloat(capacityTech));
+                                if (!isNaN(capacity)) {
+                                    formattedCapacity = `${capacity} ccm`;
+                                }
+                            }
+                            
+                            // Format power (remove decimals, add units)
+                            let formattedPower = '';
+                            if (powerKw) {
+                                const kw = Math.round(parseFloat(powerKw));
+                                if (!isNaN(kw)) {
+                                    formattedPower = `${kw} kW`;
+                                    
+                                    // Add PS in brackets if available
+                                    if (powerPs) {
+                                        const ps = Math.round(parseFloat(powerPs));
+                                        if (!isNaN(ps)) {
+                                            formattedPower += ` (${ps} PS)`;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Build display name with technical data
+                            let displayParts = [];
+                            if (fuelType) displayParts.push(fuelType);
+                            if (formattedCapacity) displayParts.push(formattedCapacity);
+                            if (formattedPower) displayParts.push(formattedPower);
+                            if (engineName && !displayParts.some(part => part.includes(engineName))) {
+                                displayParts.push(engineName);
+                            }
+                            
+                            typeName = displayParts.length > 0 ? displayParts.join(' - ') : 
+                                      (type.typeName || 
+                                       type.name || 
+                                       type.type || 
+                                       `Typ ${index + 1}`);
+                            
+                            typeId = type.vehicleId || 
+                                    type.vehicle_id || 
+                                    type.typeId || 
+                                    type.id || 
+                                    type.code || 
+                                    type.key || 
+                                    type.value || 
+                                    type.type_id ||
+                                    type.identifier ||
+                                    index.toString();
+                        }
+
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({name: typeName, id: typeId, data: type});
+                        option.textContent = typeName;
+                        typeSelect.appendChild(option);
+                    });
+                } else {
+                    typeSelect.innerHTML = '<option value="">Keine Fahrzeugtypen gefunden</option>';
                 }
-            });
-        }, observerOptions);
+            }
 
-        // Beobachte alle Service Cards
-        document.querySelectorAll('.service-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            card.style.transition = 'all 0.6s ease';
-            observer.observe(card);
+            async function loadCategories(vehicleId, manufacturerId) {
+                if (!vehicleId || !manufacturerId) return;
+
+                // Show loading and categories section
+                document.getElementById('categoriesSection').classList.remove('hidden');
+                document.getElementById('categoriesLoading').classList.remove('hidden');
+                document.getElementById('categoriesDisplay').innerHTML = '';
+
+                try {
+                    const response = await fetch(`https://auto-parts-catalog.p.rapidapi.com/category/category-products-groups-variant-1/${vehicleId}/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                            'x-rapidapi-key': currentApiKey
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        displayCategories(data);
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${data.message || 'Fehler beim Laden der Kategorien'}`);
+                    }
+
+                } catch (err) {
+                    console.error('Error loading categories:', err);
+                    document.getElementById('categoriesDisplay').innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            <strong>Fehler:</strong> ${err.message}
+                        </div>
+                    `;
+                } finally {
+                    document.getElementById('categoriesLoading').classList.add('hidden');
+                }
+            }
+
+            function displayCategories(data) {
+                console.log('Categories data received:', data);
+                
+                // Try different possible data structures
+                let categories = [];
+                
+                if (data.categories) {
+                    categories = data.categories;
+                } else if (data.data) {
+                    categories = data.data;
+                } else if (data.results) {
+                    categories = data.results;
+                } else if (data.items) {
+                    categories = data.items;
+                } else if (data.groups) {
+                    categories = data.groups;
+                } else if (Array.isArray(data)) {
+                    categories = data;
+                } else if (typeof data === 'object') {
+                    const keys = Object.keys(data);
+                    for (let key of keys) {
+                        if (Array.isArray(data[key])) {
+                            categories = data[key];
+                            break;
+                        }
+                    }
+                }
+
+                const categoriesDisplay = document.getElementById('categoriesDisplay');
+
+                if (Array.isArray(categories) && categories.length > 0) {
+                    // Build hierarchical tree structure
+                    const tree = buildCategoryTree(categories);
+                    
+                    // Display tree
+                    categoriesDisplay.innerHTML = renderCategoryTree(tree);
+                    
+                    // Add click handlers for tree navigation
+                    addTreeClickHandlers();
+                } else {
+                    categoriesDisplay.innerHTML = `
+                        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                            <strong>Keine Kategorien gefunden</strong>
+                        </div>
+                    `;
+                }
+            }
+
+            function buildCategoryTree(categories) {
+                const tree = {};
+                
+                categories.forEach(category => {
+                    if (typeof category === 'object' && category !== null) {
+                        // Extract all levels
+                        const levels = [];
+                        for (let i = 1; i <= 10; i++) {
+                            const levelText = category[`levelText_${i}`] || category[`level_text_${i}`];
+                            const levelId = category[`levelId_${i}`] || category[`level_id_${i}`];
+                            
+                            if (levelText) {
+                                levels.push({
+                                    text: levelText,
+                                    id: levelId || '',
+                                    level: i
+                                });
+                            }
+                        }
+                        
+                        // Build nested structure
+                        let currentLevel = tree;
+                        levels.forEach((level, index) => {
+                            const key = level.text;
+                            
+                            if (!currentLevel[key]) {
+                                currentLevel[key] = {
+                                    text: level.text,
+                                    id: level.id,
+                                    level: level.level,
+                                    children: {},
+                                    isLeaf: index === levels.length - 1,
+                                    fullPath: levels.slice(0, index + 1),
+                                    originalData: category
+                                };
+                            }
+                            
+                            // Update isLeaf status
+                            if (index === levels.length - 1) {
+                                currentLevel[key].isLeaf = true;
+                            } else {
+                                currentLevel[key].isLeaf = false;
+                            }
+                            
+                            currentLevel = currentLevel[key].children;
+                        });
+                    }
+                });
+                
+                return tree;
+            }
+
+            function renderCategoryTree(tree, level = 1) {
+                let html = '';
+                
+                Object.values(tree).forEach(node => {
+                    const hasChildren = Object.keys(node.children).length > 0;
+                    const indent = (level - 1) * 20;
+                    
+                    // Choose icon based on level and leaf status
+                    let icon = '📁';
+                    if (level === 1) icon = '🚗';
+                    else if (level === 2) icon = '🔧';
+                    else if (level === 3) icon = '⚙️';
+                    else if (level === 4) icon = '🔩';
+                    else if (node.isLeaf) icon = '📄';
+                    
+                    html += `
+                        <div class="category-item" style="margin-left: ${indent}px;">
+                            <div class="flex items-center py-2 px-3 hover:bg-gray-100 rounded cursor-pointer border-b border-gray-100" 
+                                 data-category-id="${node.id}" 
+                                 data-category-text="${node.text}"
+                                 data-level="${level}"
+                                 data-has-children="${hasChildren}"
+                                 data-is-leaf="${node.isLeaf}">
+                                
+                                ${hasChildren ? `
+                                    <span class="toggle-icon mr-2 text-gray-500 transition-transform duration-200">▶</span>
+                                ` : `
+                                    <span class="mr-2 text-gray-300">•</span>
+                                `}
+                                
+                                <span class="mr-2">${icon}</span>
+                                
+                                <span class="flex-1 font-medium text-gray-800">${node.text}</span>
+                                
+                                ${node.isLeaf ? `
+                                    <button class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition-colors duration-200 parts-link"
+                                            data-category-path='${JSON.stringify(node.fullPath)}'
+                                            data-original-data='${JSON.stringify(node.originalData)}'>
+                                        Ersatzteile →
+                                    </button>
+                                ` : ''}
+                            </div>
+                            
+                            ${hasChildren ? `
+                                <div class="children hidden">
+                                    ${renderCategoryTree(node.children, level + 1)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                return html;
+            }
+
+            function addTreeClickHandlers() {
+                // Handle category expansion/collapse
+                document.querySelectorAll('[data-has-children="true"]').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // Don't trigger if clicking on parts link
+                        if (e.target.classList.contains('parts-link')) return;
+                        
+                        const children = this.parentElement.querySelector('.children');
+                        const toggleIcon = this.querySelector('.toggle-icon');
+                        
+                        if (children && toggleIcon) {
+                            if (children.classList.contains('hidden')) {
+                                children.classList.remove('hidden');
+                                toggleIcon.style.transform = 'rotate(90deg)';
+                                toggleIcon.textContent = '▼';
+                            } else {
+                                children.classList.add('hidden');
+                                toggleIcon.style.transform = 'rotate(0deg)';
+                                toggleIcon.textContent = '▶';
+                            }
+                        }
+                    });
+                });
+
+                // Handle parts link clicks
+                document.querySelectorAll('.parts-link').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        const categoryPath = JSON.parse(this.dataset.categoryPath);
+                        const originalData = JSON.parse(this.dataset.originalData);
+                        
+                        // Get the required IDs for the parts API
+                        const manufacturerData = JSON.parse(manufacturerSelect.value);
+                        const typeData = JSON.parse(typeSelect.value);
+                        
+                        const vehicleId = typeData.id;
+                        const manufacturerId = manufacturerData.id;
+                        const productGroupId = categoryPath[categoryPath.length - 1].id;
+                        
+                        if (vehicleId && productGroupId && manufacturerId) {
+                            loadPartsForCategory(vehicleId, productGroupId, manufacturerId, categoryPath);
+                        } else {
+                            const pathText = categoryPath.map(p => p.text).join(' → ');
+                            alert(`Fehler: Fehlende IDs für Ersatzteile-Abfrage!\n\n${pathText}`);
+                        }
+                    });
+                });
+            }
+
+            async function loadPartsForCategory(vehicleId, productGroupId, manufacturerId, categoryPath) {
+                const pathText = categoryPath.map(p => p.text).join(' → ');
+                
+                // Show loading state in right column
+                const partsDisplay = document.getElementById('partsDisplay');
+                
+                partsDisplay.innerHTML = `
+                    <div class="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                        <p class="text-blue-800 font-medium">${pathText}</p>
+                    </div>
+                    <div class="text-center mb-4">
+                        <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <p class="text-gray-600 mt-2 text-xs">Lade Ersatzteile...</p>
+                    </div>
+                `;
+                
+                try {
+                    const apiUrl = `https://auto-parts-catalog.p.rapidapi.com/articles/list/vehicle-id/${vehicleId}/product-group-id/${productGroupId}/manufacturer-id/${manufacturerId}/lang-id/1/country-filter-id/1/type-id/1`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'GET',
+                        headers: {
+                            'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                            'x-rapidapi-key': currentApiKey
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        displayParts(data, pathText, partsDisplay);
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${data.message || 'Fehler beim Laden der Ersatzteile'}`);
+                    }
+
+                } catch (err) {
+                    console.error('Error loading parts:', err);
+                    partsDisplay.innerHTML = `
+                        <div class="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                            <p class="text-blue-800 font-medium">${pathText}</p>
+                        </div>
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-xs">
+                            <strong>Fehler:</strong> ${err.message}
+                        </div>
+                    `;
+                }
+            }
+
+            async function displayParts(data, categoryPath, partsDisplay) {
+                console.log('Parts data received:', data);
+                
+                // Try different possible data structures for parts
+                let parts = [];
+                
+                if (data.articles) {
+                    parts = data.articles;
+                } else if (data.parts) {
+                    parts = data.parts;
+                } else if (data.data) {
+                    parts = data.data;
+                } else if (data.results) {
+                    parts = data.results;
+                } else if (data.items) {
+                    parts = data.items;
+                } else if (Array.isArray(data)) {
+                    parts = data;
+                } else if (typeof data === 'object') {
+                    const keys = Object.keys(data);
+                    for (let key of keys) {
+                        if (Array.isArray(data[key])) {
+                            parts = data[key];
+                            break;
+                        }
+                    }
+                }
+
+                let partsHtml = `
+                    <div class="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                        <p class="text-blue-800 font-medium">${categoryPath}</p>
+                    </div>
+                `;
+
+                if (Array.isArray(parts) && parts.length > 0) {
+                    // Filter parts by supplierId 81 and 185
+                    const filteredParts = parts.filter(part => {
+                        const supplierId = part.supplierId || part.supplier_id || part.supplierID || '';
+                        return supplierId == 81 || supplierId == 185;
+                    });
+                    
+                    if (filteredParts.length > 0) {
+                        partsHtml += `
+                            <div class="mb-2 text-xs text-gray-600">
+                                <strong>${filteredParts.length}</strong> Ersatzteile (Lieferant 81 & 185)
+                            </div>
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                        `;
+                        
+                        // Load price and stock data for all parts
+                        const partsWithPricing = await loadPricingForParts(filteredParts);
+                        
+                        partsWithPricing.forEach((part, index) => {
+                            // Extract required fields
+                            let articleNo = part.articleNo || part.articleNumber || part.article_no || part.article_number || '';
+                            let supplierName = part.supplierName || part.supplier_name || part.brand || part.brandName || '';
+                            let articleProductName = part.articleProductName || part.article_product_name || part.productName || part.name || part.title || '';
+                            let imageLink = part.s3ImageLink || part.s3_image_link || part.imageLink || part.image_link || part.image || part.imageUrl || part.image_url || '';
+                            
+                            // Pricing information from webhook
+                            let priceInfo = part.pricingInfo || {};
+                            let price = priceInfo.preis || '';
+                            let stock = priceInfo.lagerstand || '';
+                            let deposit = priceInfo.pfand || '';
+                            let minQuantity = priceInfo.mindestmenge || '';
+                            let pricingError = part.pricingError || false;
+                            
+                            partsHtml += `
+                                <div class="border border-gray-200 rounded p-3 hover:shadow-sm transition-shadow">
+                                    <div class="flex gap-3">
+                                        ${imageLink ? `
+                                            <div class="flex-shrink-0">
+                                                <img src="${imageLink}" 
+                                                     alt="${articleProductName}" 
+                                                     class="w-16 h-16 object-cover rounded border cursor-pointer"
+                                                     onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})"
+                                                     onerror="this.src=''; this.alt='Bild nicht verfügbar'; this.className='w-16 h-16 bg-gray-200 rounded border flex items-center justify-center text-xs text-gray-500';">
+                                            </div>
+                                        ` : `
+                                            <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded border flex items-center justify-center cursor-pointer"
+                                                 onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})">
+                                                <span class="text-xs text-gray-500">Kein Bild</span>
+                                            </div>
+                                        `}
+                                        
+                                        <div class="flex-1 min-w-0">
+                                            ${articleProductName ? `
+                                                <h4 class="text-sm font-medium text-gray-800 mb-1 truncate cursor-pointer hover:text-blue-600"
+                                                    onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})">${articleProductName}</h4>
+                                            ` : ''}
+                                            
+                                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
+                                                ${articleNo ? `
+                                                    <div>
+                                                        <strong>Art.-Nr.:</strong> ${articleNo}
+                                                    </div>
+                                                ` : ''}
+                                                
+                                                ${supplierName ? `
+                                                    <div>
+                                                        <strong>Lieferant:</strong> ${supplierName}
+                                                    </div>
+                                                ` : ''}
+                                                
+                                                ${price ? `
+                                                    <div class="text-green-700 font-semibold">
+                                                        <strong>💰 Preis:</strong> €${price}
+                                                    </div>
+                                                ` : (pricingError ? `
+                                                    <div class="text-gray-500">
+                                                        <strong>💰 Preis:</strong> Nicht verfügbar
+                                                    </div>
+                                                ` : `
+                                                    <div class="text-gray-400">
+                                                        <strong>💰 Preis:</strong> Wird geladen...
+                                                    </div>
+                                                `)}
+                                                
+                                                ${stock ? `
+                                                    <div class="${parseInt(stock) > 0 ? 'text-green-700' : 'text-red-600'} font-semibold">
+                                                        <strong>📦 Lager:</strong> ${stock} Stk.
+                                                    </div>
+                                                ` : (pricingError ? `
+                                                    <div class="text-gray-500">
+                                                        <strong>📦 Lager:</strong> Nicht verfügbar
+                                                    </div>
+                                                ` : `
+                                                    <div class="text-gray-400">
+                                                        <strong>📦 Lager:</strong> Wird geladen...
+                                                    </div>
+                                                `)}
+                                                
+                                                ${deposit ? `
+                                                    <div class="text-orange-600">
+                                                        <strong>🔄 Pfand:</strong> €${deposit}
+                                                    </div>
+                                                ` : ''}
+                                                
+                                                ${minQuantity && minQuantity !== '1' ? `
+                                                    <div class="text-blue-600">
+                                                        <strong>📊 Min.:</strong> ${minQuantity} Stk.
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                            
+                                            <div class="flex gap-2 mt-2">
+                                                <button onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})" 
+                                                        class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors duration-200">
+                                                    🔍 Details
+                                                </button>
+                                                <button onclick="addToCart(${JSON.stringify(part).replace(/"/g, '&quot;')})" 
+                                                        class="text-xs ${stock && parseInt(stock) > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white px-2 py-1 rounded transition-colors duration-200"
+                                                        ${stock && parseInt(stock) <= 0 ? 'disabled title="Nicht auf Lager"' : ''}
+                                                        title="${minQuantity && minQuantity !== '1' ? `Mindestmenge: ${minQuantity} Stück` : 'In Warenkorb legen'}">
+                                                    🛒 ${minQuantity && minQuantity !== '1' ? `+${minQuantity}` : 'In Warenkorb'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        partsHtml += '</div>';
+                    } else {
+                        partsHtml += `
+                            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded text-xs">
+                                <strong>Keine Ersatzteile</strong> von Lieferant 81 oder 185 gefunden
+                            </div>
+                        `;
+                    }
+                    
+                } else {
+                    partsHtml += `
+                        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded text-xs">
+                            <strong>Keine Ersatzteile gefunden</strong>
+                        </div>
+                    `;
+                }
+
+                partsDisplay.innerHTML = partsHtml;
+            }
+
+            // Function to load pricing information for parts
+            async function loadPricingForParts(parts) {
+                const partsWithPricing = [];
+                
+                for (const part of parts) {
+                    let supplierName = part.supplierName || part.supplier_name || part.brand || part.brandName || '';
+                    let articleNo = part.articleNo || part.articleNumber || part.article_no || part.article_number || '';
+                    
+                    if (supplierName && articleNo) {
+                        try {
+                            const pricingInfo = await loadPricingInfo(supplierName, articleNo);
+                            partsWithPricing.push({
+                                ...part,
+                                pricingInfo: pricingInfo,
+                                pricingError: false
+                            });
+                        } catch (error) {
+                            console.error(`Error loading pricing for ${supplierName} ${articleNo}:`, error);
+                            partsWithPricing.push({
+                                ...part,
+                                pricingInfo: {},
+                                pricingError: true
+                            });
+                        }
+                    } else {
+                        partsWithPricing.push({
+                            ...part,
+                            pricingInfo: {},
+                            pricingError: true
+                        });
+                    }
+                }
+                
+                return partsWithPricing;
+            }
+
+            // Function to load pricing information from webhook
+            async function loadPricingInfo(hersteller, artikelnummer) {
+                try {
+                    const response = await fetch('https://nachtn-new.zaruba-edv.at/webhook/7253d09c-7e4e-4e62-99f1-e05bc4fffb9b', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            hersteller: hersteller,
+                            artikelnummer: artikelnummer
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log(`Pricing data for ${hersteller} ${artikelnummer}:`, data);
+                    
+                    // Return the first result if array, or the data itself
+                    if (Array.isArray(data) && data.length > 0) {
+                        return data[0];
+                    } else if (typeof data === 'object' && data !== null) {
+                        return data;
+                    } else {
+                        return {};
+                    }
+                    
+                } catch (error) {
+                    console.error(`Error loading pricing for ${hersteller} ${artikelnummer}:`, error);
+                    return {};
+                }
+            }
         });
 
-        // Parallax Effekt für Hero Section
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallax = document.querySelector('.hero');
-            const speed = scrolled * 0.5;
-            parallax.style.transform = `translateY(${speed}px)`;
+        loadButton.addEventListener('click', async () => {
+            // Reset UI
+            loading.classList.remove('hidden');
+            error.classList.add('hidden');
+            results.classList.add('hidden');
+
+            loadButton.disabled = true;
+            loadButton.textContent = '⏳ Lädt...';
+
+            try {
+                const response = await fetch('https://auto-parts-catalog.p.rapidapi.com/manufacturers/list/lang-id/1/country-filter-id/1/type-id/1', {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-host': 'auto-parts-catalog.p.rapidapi.com',
+                        'x-rapidapi-key': currentApiKey
+                    }
+                });
+
+                const data = await response.json();
+
+                // Hide loading
+                loading.classList.add('hidden');
+
+                if (response.ok) {
+                    displayResults(data, response.status);
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || 'Unbekannter Fehler'}`);
+                }
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                showError(err.message);
+            } finally {
+                loadButton.disabled = false;
+                loadButton.textContent = '📡 Hersteller laden';
+            }
         });
 
-        // Dynamische Workflow Animation
-        const workflowSteps = document.querySelectorAll('.workflow-step');
-        let currentStep = 0;
+        function displayResults(data, status) {
+            console.log('Raw API response:', data);
+            
+            // Try different possible data structures
+            let manufacturers = [];
+            
+            if (data.manufacturers) {
+                manufacturers = data.manufacturers;
+            } else if (data.data) {
+                manufacturers = data.data;
+            } else if (data.results) {
+                manufacturers = data.results;
+            } else if (data.items) {
+                manufacturers = data.items;
+            } else if (Array.isArray(data)) {
+                manufacturers = data;
+            } else if (typeof data === 'object') {
+                const keys = Object.keys(data);
+                for (let key of keys) {
+                    if (Array.isArray(data[key])) {
+                        manufacturers = data[key];
+                        break;
+                    }
+                }
+            }
 
-        setInterval(() => {
-            workflowSteps.forEach(step => step.style.transform = 'scale(1)');
-            workflowSteps[currentStep].style.transform = 'scale(1.2)';
-            currentStep = (currentStep + 1) % workflowSteps.length;
-        }, 1500);
+            // Define favorite manufacturer IDs (easily editable)
+            const favoriteManufacturerIds = [5, 16, 88, 93, 121]; // Sorted by number as requested
+
+            // Populate dropdown menu
+            const manufacturerSelect = document.getElementById('manufacturerSelect');
+            manufacturerSelect.innerHTML = '<option value="">-- Bitte wählen --</option>';
+
+            if (Array.isArray(manufacturers) && manufacturers.length > 0) {
+                // Process all manufacturers first
+                const processedManufacturers = manufacturers.map((manufacturer, index) => {
+                    let manufacturerName = 'Unbekannt';
+                    let manufacturerId = '';
+                    
+                    if (typeof manufacturer === 'string') {
+                        manufacturerName = manufacturer;
+                    } else if (typeof manufacturer === 'object' && manufacturer !== null) {
+                        manufacturerName = manufacturer.name || 
+                                         manufacturer.manufacturer || 
+                                         manufacturer.title || 
+                                         manufacturer.brand || 
+                                         manufacturer.label ||
+                                         manufacturer.display_name ||
+                                         manufacturer.full_name ||
+                                         manufacturer.text ||
+                                         `Hersteller ${index + 1}`;
+                        
+                        manufacturerId = manufacturer.id || 
+                                       manufacturer.code || 
+                                       manufacturer.key || 
+                                       manufacturer.value || 
+                                       manufacturer.manufacturer_id ||
+                                       manufacturer.mfr_id ||
+                                       manufacturer.brand_id ||
+                                       manufacturer.company_id ||
+                                       manufacturer.identifier ||
+                                       manufacturer.uid ||
+                                       manufacturer.pk ||
+                                       manufacturer.primary_key ||
+                                       '';
+                        
+                        if (!manufacturerId) {
+                            for (let [key, value] of Object.entries(manufacturer)) {
+                                if (typeof value === 'number' || (typeof value === 'string' && !isNaN(value) && value.trim() !== '')) {
+                                    manufacturerId = value.toString();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    return {
+                        name: manufacturerName,
+                        id: manufacturerId,
+                        data: manufacturer,
+                        isFavorite: favoriteManufacturerIds.includes(parseInt(manufacturerId))
+                    };
+                });
+
+                // Separate favorites and regular manufacturers
+                const favorites = [];
+                const regular = [];
+
+                processedManufacturers.forEach(manufacturer => {
+                    if (manufacturer.isFavorite) {
+                        favorites.push(manufacturer);
+                    } else {
+                        regular.push(manufacturer);
+                    }
+                });
+
+                // Sort favorites by the order in favoriteManufacturerIds array
+                favorites.sort((a, b) => {
+                    const indexA = favoriteManufacturerIds.indexOf(parseInt(a.id));
+                    const indexB = favoriteManufacturerIds.indexOf(parseInt(b.id));
+                    return indexA - indexB;
+                });
+
+                // Sort regular manufacturers alphabetically
+                regular.sort((a, b) => a.name.localeCompare(b.name));
+
+                // Add favorites section header
+                if (favorites.length > 0) {
+                    const favoritesHeader = document.createElement('optgroup');
+                    favoritesHeader.label = '⭐ Favoriten';
+                    manufacturerSelect.appendChild(favoritesHeader);
+
+                    // Add favorite manufacturers
+                    favorites.forEach(manufacturer => {
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({name: manufacturer.name, id: manufacturer.id, data: manufacturer.data});
+                        option.textContent = `⭐ ${manufacturer.name}`;
+                        favoritesHeader.appendChild(option);
+                    });
+                }
+
+                // Add regular manufacturers section header
+                if (regular.length > 0) {
+                    const regularHeader = document.createElement('optgroup');
+                    regularHeader.label = '📋 Alle Hersteller';
+                    manufacturerSelect.appendChild(regularHeader);
+
+                    // Add regular manufacturers
+                    regular.forEach(manufacturer => {
+                        const option = document.createElement('option');
+                        option.value = JSON.stringify({name: manufacturer.name, id: manufacturer.id, data: manufacturer.data});
+                        option.textContent = manufacturer.name;
+                        regularHeader.appendChild(option);
+                    });
+                }
+            }
+
+            results.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Make functions globally available
+        window.openPartDetailModal = openPartDetailModal;
+        window.addToCart = addToCart;
+        window.removeFromCart = removeFromCart;
     </script>
-	<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
-<script>
-  (function(d,t) {
-    var BASE_URL="https://chatwoot.zaruba-edv.at";
-    var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-    g.src=BASE_URL+"/packs/js/sdk.js";
-    g.async = true;
-    s.parentNode.insertBefore(g,s);
-    g.onload=function(){
-      window.chatwootSDK.run({
-        websiteToken: 'nanAt2X8hGzQvXKbtRSL6VSd',
-        baseUrl: BASE_URL
-      })
-    }
-  })(document,"script");
-</script>
-
-
-
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975e5cd445fc5ba5',t:'MTc1NjMyNzAwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
