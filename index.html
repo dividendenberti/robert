@@ -1429,10 +1429,10 @@
                 `;
 
                 if (Array.isArray(parts) && parts.length > 0) {
-                    // Filter parts by supplierId 81 and 185
+                    // Filter parts by supplierId 81 and 185 Artikel Kategorien
                     const filteredParts = parts.filter(part => {
                         const supplierId = part.supplierId || part.supplier_id || part.supplierID || '';
-                        return supplierId == 81 || supplierId == 185;
+                        return supplierId == 3 || supplierId == 185 || supplierId == 30 || supplierId == 26 || supplierId == 35 || supplierId == 4;
                     });
                     
                     if (filteredParts.length > 0) {
