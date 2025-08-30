@@ -147,9 +147,9 @@
 
                     <!-- Categories and Parts Section -->
                     <div id="categoriesSection" class="hidden bg-white rounded-lg shadow-lg p-6 mb-6">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- Left Column: Categories -->
-                            <div>
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                            <!-- Left Column: Categories (2/5 width) -->
+                            <div class="lg:col-span-2">
                                 <h2 class="text-xl font-semibold text-gray-800 mb-4">🔧 Ersatzteil-Kategorien</h2>
                                 
                                 <div id="categoriesLoading" class="hidden text-center mb-4">
@@ -162,8 +162,8 @@
                                 </div>
                             </div>
                             
-                            <!-- Right Column: Parts -->
-                            <div>
+                            <!-- Right Column: Parts (3/5 width) -->
+                            <div class="lg:col-span-3">
                                 <div class="flex justify-between items-center mb-4">
                                     <h2 class="text-xl font-semibold text-gray-800">🔩 Ersatzteile</h2>
                                     <button id="backToPartsBtn" class="hidden text-sm bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded transition duration-200">
@@ -1258,12 +1258,13 @@
                     
                     html += `
                         <div class="category-item" style="margin-left: ${indent}px;">
-                            <div class="flex items-center py-2 px-3 hover:bg-gray-100 rounded cursor-pointer border-b border-gray-100" 
+                            <div class="flex items-center py-2 px-3 hover:bg-gray-100 rounded cursor-pointer border-b border-gray-100 ${node.isLeaf ? 'parts-clickable' : ''}" 
                                  data-category-id="${node.id}" 
                                  data-category-text="${node.text}"
                                  data-level="${level}"
                                  data-has-children="${hasChildren}"
-                                 data-is-leaf="${node.isLeaf}">
+                                 data-is-leaf="${node.isLeaf}"
+                                 ${node.isLeaf ? `data-category-path='${JSON.stringify(node.fullPath)}' data-original-data='${JSON.stringify(node.originalData)}'` : ''}>
                                 
                                 ${hasChildren ? `
                                     <span class="toggle-icon mr-2 text-gray-500 transition-transform duration-200">▶</span>
@@ -1273,15 +1274,9 @@
                                 
                                 <span class="mr-2">${icon}</span>
                                 
-                                <span class="flex-1 font-medium text-gray-800">${node.text}</span>
+                                <span class="flex-1 font-medium text-gray-800 ${node.isLeaf ? 'text-blue-600 hover:text-blue-800' : ''}">${node.text}</span>
                                 
-                                ${node.isLeaf ? `
-                                    <button class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition-colors duration-200 parts-link"
-                                            data-category-path='${JSON.stringify(node.fullPath)}'
-                                            data-original-data='${JSON.stringify(node.originalData)}'>
-                                        Ersatzteile →
-                                    </button>
-                                ` : ''}
+
                             </div>
                             
                             ${hasChildren ? `
@@ -1300,9 +1295,6 @@
                 // Handle category expansion/collapse
                 document.querySelectorAll('[data-has-children="true"]').forEach(item => {
                     item.addEventListener('click', function(e) {
-                        // Don't trigger if clicking on parts link
-                        if (e.target.classList.contains('parts-link')) return;
-                        
                         const children = this.parentElement.querySelector('.children');
                         const toggleIcon = this.querySelector('.toggle-icon');
                         
@@ -1320,27 +1312,27 @@
                     });
                 });
 
-                // Handle parts link clicks
-                document.querySelectorAll('.parts-link').forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        
-                        const categoryPath = JSON.parse(this.dataset.categoryPath);
-                        const originalData = JSON.parse(this.dataset.originalData);
-                        
-                        // Get the required IDs for the parts API
-                        const manufacturerData = JSON.parse(manufacturerSelect.value);
-                        const typeData = JSON.parse(typeSelect.value);
-                        
-                        const vehicleId = typeData.id;
-                        const manufacturerId = manufacturerData.id;
-                        const productGroupId = categoryPath[categoryPath.length - 1].id;
-                        
-                        if (vehicleId && productGroupId && manufacturerId) {
-                            loadPartsForCategory(vehicleId, productGroupId, manufacturerId, categoryPath);
-                        } else {
-                            const pathText = categoryPath.map(p => p.text).join(' → ');
-                            alert(`Fehler: Fehlende IDs für Ersatzteile-Abfrage!\n\n${pathText}`);
+                // Handle parts category clicks (leaf nodes)
+                document.querySelectorAll('.parts-clickable').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (this.dataset.isLeaf === 'true') {
+                            const categoryPath = JSON.parse(this.dataset.categoryPath);
+                            const originalData = JSON.parse(this.dataset.originalData);
+                            
+                            // Get the required IDs for the parts API
+                            const manufacturerData = JSON.parse(manufacturerSelect.value);
+                            const typeData = JSON.parse(typeSelect.value);
+                            
+                            const vehicleId = typeData.id;
+                            const manufacturerId = manufacturerData.id;
+                            const productGroupId = categoryPath[categoryPath.length - 1].id;
+                            
+                            if (vehicleId && productGroupId && manufacturerId) {
+                                loadPartsForCategory(vehicleId, productGroupId, manufacturerId, categoryPath);
+                            } else {
+                                const pathText = categoryPath.map(p => p.text).join(' → ');
+                                alert(`Fehler: Fehlende IDs für Ersatzteile-Abfrage!\n\n${pathText}`);
+                            }
                         }
                     });
                 });
@@ -1429,24 +1421,32 @@
                 `;
 
                 if (Array.isArray(parts) && parts.length > 0) {
-                    // Filter parts by supplierId 81 and 185 Artikel Kategorien
+                    // Filter parts by supplierId 81 and 185
                     const filteredParts = parts.filter(part => {
                         const supplierId = part.supplierId || part.supplier_id || part.supplierID || '';
                         return supplierId == 3 || supplierId == 185 || supplierId == 30 || supplierId == 26 || supplierId == 35 || supplierId == 4;
                     });
                     
                     if (filteredParts.length > 0) {
-                        partsHtml += `
-                            <div class="mb-2 text-xs text-gray-600">
-                                <strong>${filteredParts.length}</strong> Ersatzteile (Lieferant 81 & 185)
-                            </div>
-                            <div class="space-y-3 max-h-96 overflow-y-auto">
-                        `;
-                        
                         // Load price and stock data for all parts
                         const partsWithPricing = await loadPricingForParts(filteredParts);
                         
-                        partsWithPricing.forEach((part, index) => {
+                        // Filter out parts without price or with zero stock
+                        const availableParts = partsWithPricing.filter(part => {
+                            const priceInfo = part.pricingInfo || {};
+                            const price = priceInfo.preis || '';
+                            const stock = priceInfo.lagerstand || '';
+                            
+                            // Only show parts that have a price AND stock > 0
+                            return price && stock && parseInt(stock) > 0;
+                        });
+                        
+                        if (availableParts.length > 0) {
+                            partsHtml += `
+                                <div class="space-y-4 max-h-96 overflow-y-auto">
+                            `;
+                        
+                        availableParts.forEach((part, index) => {
                             // Extract required fields
                             let articleNo = part.articleNo || part.articleNumber || part.article_no || part.article_number || '';
                             let supplierName = part.supplierName || part.supplier_name || part.brand || part.brandName || '';
@@ -1462,18 +1462,18 @@
                             let pricingError = part.pricingError || false;
                             
                             partsHtml += `
-                                <div class="border border-gray-200 rounded p-3 hover:shadow-sm transition-shadow">
-                                    <div class="flex gap-3">
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex gap-4">
                                         ${imageLink ? `
                                             <div class="flex-shrink-0">
                                                 <img src="${imageLink}" 
                                                      alt="${articleProductName}" 
-                                                     class="w-16 h-16 object-cover rounded border cursor-pointer"
+                                                     class="w-20 h-20 object-cover rounded-lg border cursor-pointer"
                                                      onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})"
-                                                     onerror="this.src=''; this.alt='Bild nicht verfügbar'; this.className='w-16 h-16 bg-gray-200 rounded border flex items-center justify-center text-xs text-gray-500';">
+                                                     onerror="this.src=''; this.alt='Bild nicht verfügbar'; this.className='w-20 h-20 bg-gray-200 rounded-lg border flex items-center justify-center text-xs text-gray-500';">
                                             </div>
                                         ` : `
-                                            <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded border flex items-center justify-center cursor-pointer"
+                                            <div class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg border flex items-center justify-center cursor-pointer"
                                                  onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})">
                                                 <span class="text-xs text-gray-500">Kein Bild</span>
                                             </div>
@@ -1481,11 +1481,11 @@
                                         
                                         <div class="flex-1 min-w-0">
                                             ${articleProductName ? `
-                                                <h4 class="text-sm font-medium text-gray-800 mb-1 truncate cursor-pointer hover:text-blue-600"
+                                                <h4 class="text-base font-semibold text-gray-800 mb-2 truncate cursor-pointer hover:text-blue-600"
                                                     onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})">${articleProductName}</h4>
                                             ` : ''}
                                             
-                                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
+                                            <div class="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
                                                 ${articleNo ? `
                                                     <div>
                                                         <strong>Art.-Nr.:</strong> ${articleNo}
@@ -1502,29 +1502,13 @@
                                                     <div class="text-green-700 font-semibold">
                                                         <strong>💰 Preis:</strong> €${price}
                                                     </div>
-                                                ` : (pricingError ? `
-                                                    <div class="text-gray-500">
-                                                        <strong>💰 Preis:</strong> Nicht verfügbar
-                                                    </div>
-                                                ` : `
-                                                    <div class="text-gray-400">
-                                                        <strong>💰 Preis:</strong> Wird geladen...
-                                                    </div>
-                                                `)}
+                                                ` : ''}
                                                 
                                                 ${stock ? `
-                                                    <div class="${parseInt(stock) > 0 ? 'text-green-700' : 'text-red-600'} font-semibold">
+                                                    <div class="text-green-700 font-semibold">
                                                         <strong>📦 Lager:</strong> ${stock} Stk.
                                                     </div>
-                                                ` : (pricingError ? `
-                                                    <div class="text-gray-500">
-                                                        <strong>📦 Lager:</strong> Nicht verfügbar
-                                                    </div>
-                                                ` : `
-                                                    <div class="text-gray-400">
-                                                        <strong>📦 Lager:</strong> Wird geladen...
-                                                    </div>
-                                                `)}
+                                                ` : ''}
                                                 
                                                 ${deposit ? `
                                                     <div class="text-orange-600">
@@ -1539,14 +1523,13 @@
                                                 ` : ''}
                                             </div>
                                             
-                                            <div class="flex gap-2 mt-2">
+                                            <div class="flex gap-3 mt-3">
                                                 <button onclick="openPartDetailModal(${JSON.stringify(part).replace(/"/g, '&quot;')})" 
-                                                        class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors duration-200">
+                                                        class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors duration-200">
                                                     🔍 Details
                                                 </button>
                                                 <button onclick="addToCart(${JSON.stringify(part).replace(/"/g, '&quot;')})" 
-                                                        class="text-xs ${stock && parseInt(stock) > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white px-2 py-1 rounded transition-colors duration-200"
-                                                        ${stock && parseInt(stock) <= 0 ? 'disabled title="Nicht auf Lager"' : ''}
+                                                        class="text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg transition-colors duration-200"
                                                         title="${minQuantity && minQuantity !== '1' ? `Mindestmenge: ${minQuantity} Stück` : 'In Warenkorb legen'}">
                                                     🛒 ${minQuantity && minQuantity !== '1' ? `+${minQuantity}` : 'In Warenkorb'}
                                                 </button>
@@ -1557,7 +1540,14 @@
                             `;
                         });
                         
-                        partsHtml += '</div>';
+                            partsHtml += '</div>';
+                        } else {
+                            partsHtml += `
+                                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded text-xs">
+                                    <strong>Keine verfügbaren Ersatzteile</strong> mit Preis und Lagerstand gefunden
+                                </div>
+                            `;
+                        }
                     } else {
                         partsHtml += `
                             <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded text-xs">
@@ -1840,5 +1830,5 @@
         window.addToCart = addToCart;
         window.removeFromCart = removeFromCart;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975e5cd445fc5ba5',t:'MTc1NjMyNzAwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9776ec44e76bf832',t:'MTc1NjU4NDUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
