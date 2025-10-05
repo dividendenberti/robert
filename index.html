@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Parts API Test - Version 43</title>
+    <title>ZARUBA-KFZ-TEILE-HANDEL - Auto Parts API Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
@@ -13,7 +18,7 @@
             <div id="loginSection" class="max-w-md mx-auto">
                 <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
                     <div class="text-center mb-6">
-                        <h1 class="text-3xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE</h1>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE-HANDEL</h1>
                     </div>
                     
                     <form id="loginForm" class="space-y-4">
@@ -58,7 +63,7 @@
             <div id="mainApp" class="hidden">
                 <!-- Header -->
                 <div class="text-center mb-6">
-                    <h1 class="text-4xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE</h1>
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">🚗 ZARUBA-KFZ-TEILE-HANDEL</h1>
                 </div>
 
                 <!-- User Info Header with Buttons -->
@@ -238,6 +243,7 @@
         // Global variables
         let currentApiKey = '';
         let currentCustomerNumber = '';
+        let currentWebhookKey = '';
         let shoppingCartItems = [];
         
         const loadButton = document.getElementById('loadCountries');
@@ -266,6 +272,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': 'Bearer geheim1234'
                     },
                     body: JSON.stringify({
                         benutzer: username,
@@ -280,6 +287,7 @@
                     // Successful login
                     currentApiKey = data.apiKey;
                     currentCustomerNumber = username;
+                    currentWebhookKey = data.webhookkey || '';
                     
                     // Show main app and hide login
                     document.getElementById('loginSection').classList.add('hidden');
@@ -287,6 +295,7 @@
                     document.getElementById('customerNumber').textContent = currentCustomerNumber;
                     
                     console.log('Login successful, API Key:', currentApiKey);
+                    console.log('Webhook Key:', currentWebhookKey);
                 } else {
                     // Failed login
                     throw new Error(data.message || 'Ungültige Anmeldedaten');
@@ -309,6 +318,7 @@
             // Clear stored data
             currentApiKey = '';
             currentCustomerNumber = '';
+            currentWebhookKey = '';
             shoppingCartItems = [];
             
             // Reset form
@@ -680,6 +690,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentWebhookKey}`
                     },
                     body: JSON.stringify(orderData)
                 });
@@ -922,9 +933,30 @@
                                      index.toString();
                         }
 
+                        // Add year information if available
+                        let yearInfo = '';
+                        const yearFrom = model.modelYearFrom || model.model_year_from || '';
+                        const yearTo = model.modelYearTo || model.model_year_to || '';
+                        
+                        if (yearFrom) {
+                            // Extract only the year part (remove -01, -12, etc.)
+                            const cleanYearFrom = yearFrom.toString().split('-')[0];
+                            
+                            if (yearTo && yearTo !== yearFrom) {
+                                const cleanYearTo = yearTo.toString().split('-')[0];
+                                if (cleanYearFrom !== cleanYearTo) {
+                                    yearInfo = ` (${cleanYearFrom}-${cleanYearTo})`;
+                                } else {
+                                    yearInfo = ` (${cleanYearFrom})`;
+                                }
+                            } else {
+                                yearInfo = ` (${cleanYearFrom})`;
+                            }
+                        }
+
                         const option = document.createElement('option');
                         option.value = JSON.stringify({name: modelName, id: modelId, data: model});
-                        option.textContent = modelName;
+                        option.textContent = modelName + yearInfo;
                         modelSelect.appendChild(option);
                     });
                 } else {
@@ -998,44 +1030,23 @@
                     }
                 }
 
-                // Sort types by fuel type (Benzin first, then Diesel, then others)
-                if (Array.isArray(types) && types.length > 0) {
-                    types.sort((a, b) => {
-                        const fuelA = (a.fuelType || a.fuel_type || a.fuel || '').toLowerCase();
-                        const fuelB = (b.fuelType || b.fuel_type || b.fuel || '').toLowerCase();
-                        
-                        // Priority order: benzin, diesel, others
-                        const getPriority = (fuel) => {
-                            if (fuel.includes('benzin') || fuel.includes('petrol') || fuel.includes('gasoline')) return 1;
-                            if (fuel.includes('diesel')) return 2;
-                            return 3;
-                        };
-                        
-                        const priorityA = getPriority(fuelA);
-                        const priorityB = getPriority(fuelB);
-                        
-                        if (priorityA !== priorityB) {
-                            return priorityA - priorityB;
-                        }
-                        
-                        // If same fuel type, sort alphabetically
-                        return fuelA.localeCompare(fuelB);
-                    });
-                }
-
                 // Populate dropdown menu
                 typeSelect.innerHTML = '<option value="">-- Bitte wählen --</option>';
 
                 if (Array.isArray(types) && types.length > 0) {
+                    // Group types by fuel type
+                    const fuelGroups = {};
+                    
                     types.forEach((type, index) => {
-                        let typeName = 'Unbekannt';
+                        let fuelType = 'Unbekannt';
                         let typeId = '';
+                        let displayName = '';
                         
                         if (typeof type === 'string') {
-                            typeName = type;
+                            displayName = type;
                         } else if (typeof type === 'object' && type !== null) {
                             // Extract technical data
-                            let fuelType = type.fuelType || type.fuel_type || type.fuel || '';
+                            fuelType = type.fuelType || type.fuel_type || type.fuel || 'Unbekannt';
                             let engineName = type.typeEngineName || type.type_engine_name || type.engineName || type.engine_name || type.engine || '';
                             let capacityTech = type.capacityTech || type.capacity_tech || type.capacity || '';
                             let powerKw = type.powerKw || type.power_kw || type.power || '';
@@ -1067,20 +1078,18 @@
                                 }
                             }
                             
-                            // Build display name with technical data
+                            // Build display name with technical data (without fuel type)
+                            // Order: engineName, capacity, power
                             let displayParts = [];
-                            if (fuelType) displayParts.push(fuelType);
+                            if (engineName) displayParts.push(engineName);
                             if (formattedCapacity) displayParts.push(formattedCapacity);
                             if (formattedPower) displayParts.push(formattedPower);
-                            if (engineName && !displayParts.some(part => part.includes(engineName))) {
-                                displayParts.push(engineName);
-                            }
                             
-                            typeName = displayParts.length > 0 ? displayParts.join(' - ') : 
-                                      (type.typeName || 
-                                       type.name || 
-                                       type.type || 
-                                       `Typ ${index + 1}`);
+                            displayName = displayParts.length > 0 ? displayParts.join(' - ') : 
+                                         (type.typeName || 
+                                          type.name || 
+                                          type.type || 
+                                          `Typ ${index + 1}`);
                             
                             typeId = type.vehicleId || 
                                     type.vehicle_id || 
@@ -1094,10 +1103,77 @@
                                     index.toString();
                         }
 
-                        const option = document.createElement('option');
-                        option.value = JSON.stringify({name: typeName, id: typeId, data: type});
-                        option.textContent = typeName;
-                        typeSelect.appendChild(option);
+                        // Group by fuel type
+                        if (!fuelGroups[fuelType]) {
+                            fuelGroups[fuelType] = [];
+                        }
+                        
+                        fuelGroups[fuelType].push({
+                            name: displayName,
+                            id: typeId,
+                            data: type,
+                            fullName: `${fuelType} - ${displayName}`
+                        });
+                    });
+
+                    // Sort fuel types (Benzin first, then Diesel, then others)
+                    const sortedFuelTypes = Object.keys(fuelGroups).sort((a, b) => {
+                        const fuelA = a.toLowerCase();
+                        const fuelB = b.toLowerCase();
+                        
+                        // Priority order: benzin, diesel, others
+                        const getPriority = (fuel) => {
+                            if (fuel.includes('benzin') || fuel.includes('petrol') || fuel.includes('gasoline')) return 1;
+                            if (fuel.includes('diesel')) return 2;
+                            return 3;
+                        };
+                        
+                        const priorityA = getPriority(fuelA);
+                        const priorityB = getPriority(fuelB);
+                        
+                        if (priorityA !== priorityB) {
+                            return priorityA - priorityB;
+                        }
+                        
+                        // If same fuel type, sort alphabetically
+                        return fuelA.localeCompare(fuelB);
+                    });
+
+                    // Add grouped options to select
+                    sortedFuelTypes.forEach(fuelType => {
+                        const group = fuelGroups[fuelType];
+                        
+                        // Sort types within each fuel group by capacity/power
+                        group.sort((a, b) => {
+                            // Extract capacity for sorting
+                            const getCapacity = (name) => {
+                                const match = name.match(/(\d+)\s*ccm/);
+                                return match ? parseInt(match[1]) : 0;
+                            };
+                            
+                            const capacityA = getCapacity(a.name);
+                            const capacityB = getCapacity(b.name);
+                            
+                            if (capacityA !== capacityB) {
+                                return capacityA - capacityB;
+                            }
+                            
+                            // If same capacity, sort alphabetically
+                            return a.name.localeCompare(b.name);
+                        });
+                        
+                        // Create optgroup for fuel type
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = fuelType;
+                        typeSelect.appendChild(optgroup);
+                        
+                        // Add options for this fuel type
+                        group.forEach(typeInfo => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify({name: typeInfo.fullName, id: typeInfo.id, data: typeInfo.data});
+                            option.textContent = `  ${typeInfo.name}`;
+                            optgroup.appendChild(option);
+                        });
                     });
                 } else {
                     typeSelect.innerHTML = '<option value="">Keine Fahrzeugtypen gefunden</option>';
@@ -1424,7 +1500,7 @@
                     // Filter parts by supplierId 81 and 185
                     const filteredParts = parts.filter(part => {
                         const supplierId = part.supplierId || part.supplier_id || part.supplierID || '';
-                        return supplierId == 3 || supplierId == 185 || supplierId == 30 || supplierId == 26 || supplierId == 35 || supplierId == 4;
+                        return supplierId == 81 || supplierId == 185;
                     });
                     
                     if (filteredParts.length > 0) {
@@ -1610,6 +1686,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${currentWebhookKey}`
                         },
                         body: JSON.stringify({
                             hersteller: hersteller,
@@ -1830,5 +1907,5 @@
         window.addToCart = addToCart;
         window.removeFromCart = removeFromCart;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9776ec44e76bf832',t:'MTc1NjU4NDUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'989c15a0600bc26a',t:'MTc1OTY1ODU1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
