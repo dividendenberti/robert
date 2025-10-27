@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="de" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Versicherungsvergleichsportal</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+        
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        
+        .file-selected {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100 font-sans">
+  <div class="min-h-full flex flex-col">
+   <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+     <h1 id="portal-title" class="text-3xl font-bold text-gray-900 text-center">Versicherungsvergleichsportal</h1>
+     <p class="text-gray-600 text-center mt-2">Laden Sie zwei Versicherungsangebote hoch und vergleichen Sie diese automatisch</p>
+    </div>
+   </header>
+   <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><!-- Angebot 1 -->
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 id="offer1-title" class="text-xl font-semibold text-gray-800 mb-4 text-center">Angebot 1</h2>
+      <div id="upload-area-1" class="upload-area rounded-lg p-8 text-center cursor-pointer">
+       <div id="upload-content-1">
+        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewbox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <p class="text-gray-600 mb-2">PDF hier ablegen oder klicken zum Auswählen</p>
+        <p class="text-sm text-gray-500">Nur PDF-Dateien erlaubt</p>
+       </div>
+       <div id="file-info-1" class="hidden">
+        <svg class="mx-auto h-12 w-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p id="file-name-1" class="text-gray-700 font-medium"></p>
+        <p id="file-size-1" class="text-sm text-gray-500"></p>
+       </div>
+      </div><input type="file" id="file-input-1" class="hidden" accept=".pdf">
+     </div><!-- Angebot 2 -->
+     <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 id="offer2-title" class="text-xl font-semibold text-gray-800 mb-4 text-center">Angebot 2</h2>
+      <div id="upload-area-2" class="upload-area rounded-lg p-8 text-center cursor-pointer">
+       <div id="upload-content-2">
+        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewbox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <p class="text-gray-600 mb-2">PDF hier ablegen oder klicken zum Auswählen</p>
+        <p class="text-sm text-gray-500">Nur PDF-Dateien erlaubt</p>
+       </div>
+       <div id="file-info-2" class="hidden">
+        <svg class="mx-auto h-12 w-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p id="file-name-2" class="text-gray-700 font-medium"></p>
+        <p id="file-size-2" class="text-sm text-gray-500"></p>
+       </div>
+      </div><input type="file" id="file-input-2" class="hidden" accept=".pdf">
+     </div>
+    </div><!-- Vergleich Button -->
+    <div class="mt-8 text-center"><button id="compare-btn" class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 flex items-center justify-center mx-auto" disabled> <span id="btn-text">Angebote vergleichen</span>
+      <div id="btn-spinner" class="loading-spinner ml-3 hidden"></div></button>
+     <p class="text-sm text-gray-500 mt-2">Beide PDF-Dateien müssen hochgeladen werden</p>
+    </div><!-- Ergebnis Bereich -->
+    <div id="result-area" class="mt-8 hidden">
+     <div class="bg-white rounded-lg shadow-md p-6" style="width: 100%; max-width: none;">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Vergleichsergebnis</h3>
+      <div id="result-content" class="text-gray-700" style="width: 100%; max-width: none;"><!-- Hier wird das Ergebnis angezeigt -->
+      </div>
+     </div>
+    </div><!-- Fehler Bereich -->
+    <div id="error-area" class="mt-8 hidden">
+     <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex">
+       <svg class="h-5 w-5 text-red-400 mt-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg>
+       <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">Fehler beim Vergleich</h3>
+        <p id="error-message" class="text-sm text-red-700 mt-1"></p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div>
+  <script>
+        // Konfiguration
+        const defaultConfig = {
+            portal_title: "Versicherungsvergleichsportal",
+            offer1_label: "Angebot 1",
+            offer2_label: "Angebot 2"
+        };
+
+        let uploadedFiles = {
+            file1: null,
+            file2: null
+        };
+
+        const WEBHOOK_URL = "https://nachtn-new.zaruba-edv.at/webhook/4adc2473-1b0e-4054-a36c-b7dd53413d50";
+
+        // Element SDK Initialisierung
+        async function onConfigChange(config) {
+            document.getElementById('portal-title').textContent = config.portal_title || defaultConfig.portal_title;
+            document.getElementById('offer1-title').textContent = config.offer1_label || defaultConfig.offer1_label;
+            document.getElementById('offer2-title').textContent = config.offer2_label || defaultConfig.offer2_label;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [
+                    {
+                        get: () => config.primary_color || "#3b82f6",
+                        set: (value) => {
+                            config.primary_color = value;
+                            window.elementSdk.setConfig({ primary_color: value });
+                        }
+                    }
+                ],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["portal_title", config.portal_title || defaultConfig.portal_title],
+                ["offer1_label", config.offer1_label || defaultConfig.offer1_label],
+                ["offer2_label", config.offer2_label || defaultConfig.offer2_label]
+            ]);
+        }
+
+        // Upload Funktionalität
+        function setupUploadArea(areaId, inputId, fileKey) {
+            const uploadArea = document.getElementById(areaId);
+            const fileInput = document.getElementById(inputId);
+            const uploadContent = document.getElementById(`upload-content-${fileKey.slice(-1)}`);
+            const fileInfo = document.getElementById(`file-info-${fileKey.slice(-1)}`);
+            const fileName = document.getElementById(`file-name-${fileKey.slice(-1)}`);
+            const fileSize = document.getElementById(`file-size-${fileKey.slice(-1)}`);
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelection(files[0], fileKey, uploadArea, uploadContent, fileInfo, fileName, fileSize);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelection(e.target.files[0], fileKey, uploadArea, uploadContent, fileInfo, fileName, fileSize);
+                }
+            });
+        }
+
+        function handleFileSelection(file, fileKey, uploadArea, uploadContent, fileInfo, fileName, fileSize) {
+            if (file.type !== 'application/pdf') {
+                showError('Nur PDF-Dateien sind erlaubt.');
+                return;
+            }
+
+            uploadedFiles[fileKey] = file;
+            
+            uploadArea.classList.add('file-selected');
+            uploadContent.classList.add('hidden');
+            fileInfo.classList.remove('hidden');
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+
+            updateCompareButton();
+            hideError();
+        }
+
+        function updateCompareButton() {
+            const compareBtn = document.getElementById('compare-btn');
+            const hasAllFiles = uploadedFiles.file1 && uploadedFiles.file2;
+            
+            compareBtn.disabled = !hasAllFiles;
+            
+            if (hasAllFiles) {
+                compareBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                compareBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }
+        }
+
+        async function compareOffers() {
+            const compareBtn = document.getElementById('compare-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+
+            // Loading State
+            compareBtn.disabled = true;
+            btnText.textContent = 'Vergleiche Angebote...';
+            btnSpinner.classList.remove('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('offer1', uploadedFiles.file1);
+                formData.append('offer2', uploadedFiles.file2);
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server Fehler: ${response.status}`);
+                }
+
+                const result = await response.json();
+                showResult(result);
+
+            } catch (error) {
+                console.error('Fehler beim Vergleich:', error);
+                showError(`Fehler beim Vergleich der Angebote: ${error.message}`);
+            } finally {
+                // Reset Button
+                compareBtn.disabled = false;
+                btnText.textContent = 'Angebote vergleichen';
+                btnSpinner.classList.add('hidden');
+            }
+        }
+
+        function showResult(result) {
+            const resultArea = document.getElementById('result-area');
+            const resultContent = document.getElementById('result-content');
+            
+            console.log('Received result:', result);
+            
+            // Verschiedene Formate prüfen
+            let htmlContent = null;
+            
+            if (Array.isArray(result) && result.length > 0 && result[0].html) {
+                htmlContent = result[0].html;
+            } else if (result && result.html) {
+                htmlContent = result.html;
+            } else if (result && result.output && typeof result.output === 'string') {
+                htmlContent = result.output;
+            } else if (typeof result === 'string' && result.includes('<html')) {
+                htmlContent = result;
+            }
+            
+            if (htmlContent) {
+                console.log('Found HTML content, length:', htmlContent.length);
+                
+                // Verschiedene Escape-Formate handhaben
+                let cleanedHtml = htmlContent;
+                
+                // Prüfen ob es ein JSON-Objekt mit output-Feld ist
+                if (result && result.output && typeof result.output === 'string') {
+                    cleanedHtml = result.output;
+                }
+                
+                // JSON-escaped String verarbeiten
+                try {
+                    if (typeof cleanedHtml === 'string' && cleanedHtml.includes('\\n')) {
+                        cleanedHtml = JSON.parse('"' + cleanedHtml.replace(/"/g, '\\"') + '"');
+                    }
+                } catch (e) {
+                    console.log('Not JSON escaped, trying other methods');
+                }
+                
+                // Manuelle Escape-Zeichen Behandlung
+                cleanedHtml = cleanedHtml
+                    .replace(/\\n/g, '\n')
+                    .replace(/\\t/g, '\t')
+                    .replace(/\\r/g, '\r')
+                    .replace(/\\"/g, '"')
+                    .replace(/\\'/g, "'")
+                    .replace(/\\\\/g, '\\');
+                
+                console.log('Cleaned HTML preview:', cleanedHtml.substring(0, 200));
+                
+                resultContent.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-green-600 font-medium mb-4">✓ Vergleich erfolgreich abgeschlossen</p>
+                        
+                        <!-- Direkte Anzeige des HTML-Inhalts -->
+                        <div class="border rounded-lg overflow-hidden bg-white shadow-inner" style="width: 100%; max-width: none;">
+                            <div id="result-display" class="p-6" style="width: 100%; max-width: none;">
+                                ${cleanedHtml}
+                            </div>
+                        </div>
+                        
+                        <!-- Zusätzliche Optionen -->
+                        <div class="mt-4 flex gap-4">
+                            <button id="show-raw-html" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors">
+                                HTML Code anzeigen
+                            </button>
+                            <button id="show-json" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors">
+                                Rohdaten anzeigen
+                            </button>
+                        </div>
+                        
+                        <!-- HTML Code View (versteckt) -->
+                        <div id="view-raw" class="hidden mt-4">
+                            <h4 class="font-medium text-gray-800 mb-2">HTML Code:</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <pre class="text-sm overflow-auto whitespace-pre-wrap" style="max-height: 400px;">${cleanedHtml.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                            </div>
+                        </div>
+                        
+                        <!-- JSON View (versteckt) -->
+                        <div id="view-json" class="hidden mt-4">
+                            <h4 class="font-medium text-gray-800 mb-2">Rohdaten:</h4>
+                            <pre class="bg-gray-50 p-4 rounded-lg text-sm overflow-auto" style="max-height: 400px;">${JSON.stringify(result, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+                
+                // Button-Funktionalität für zusätzliche Ansichten
+                setupToggleButtons();
+                
+            } else {
+                // Fallback für andere Datenformate
+                resultContent.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-green-600 font-medium">✓ Vergleich erfolgreich abgeschlossen</p>
+                        <pre class="bg-gray-50 p-4 rounded-lg text-sm overflow-auto">${JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                `;
+            }
+            
+            resultArea.classList.remove('hidden');
+            hideError();
+        }
+        
+        function setupToggleButtons() {
+            const showRawButton = document.getElementById('show-raw-html');
+            const showJsonButton = document.getElementById('show-json');
+            const rawView = document.getElementById('view-raw');
+            const jsonView = document.getElementById('view-json');
+            
+            if (showRawButton && rawView) {
+                showRawButton.addEventListener('click', () => {
+                    if (rawView.classList.contains('hidden')) {
+                        rawView.classList.remove('hidden');
+                        showRawButton.textContent = 'HTML Code verstecken';
+                        showRawButton.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                        showRawButton.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                    } else {
+                        rawView.classList.add('hidden');
+                        showRawButton.textContent = 'HTML Code anzeigen';
+                        showRawButton.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                        showRawButton.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+                    }
+                });
+            }
+            
+            if (showJsonButton && jsonView) {
+                showJsonButton.addEventListener('click', () => {
+                    if (jsonView.classList.contains('hidden')) {
+                        jsonView.classList.remove('hidden');
+                        showJsonButton.textContent = 'Rohdaten verstecken';
+                        showJsonButton.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                        showJsonButton.classList.add('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                    } else {
+                        jsonView.classList.add('hidden');
+                        showJsonButton.textContent = 'Rohdaten anzeigen';
+                        showJsonButton.classList.remove('bg-blue-100', 'hover:bg-blue-200', 'text-blue-700');
+                        showJsonButton.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+                    }
+                });
+            }
+        }
+
+        function showError(message) {
+            const errorArea = document.getElementById('error-area');
+            const errorMessage = document.getElementById('error-message');
+            
+            errorMessage.textContent = message;
+            errorArea.classList.remove('hidden');
+        }
+
+        function hideError() {
+            const errorArea = document.getElementById('error-area');
+            errorArea.classList.add('hidden');
+        }
+
+        // Event Listeners
+        document.getElementById('compare-btn').addEventListener('click', compareOffers);
+
+        // Upload Areas initialisieren
+        setupUploadArea('upload-area-1', 'file-input-1', 'file1');
+        setupUploadArea('upload-area-2', 'file-input-2', 'file2');
+
+        // Element SDK initialisieren
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'994c0b5482db0b0f',t:'MTc2MTUwMzYyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
